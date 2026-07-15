@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeismoPattern v4</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0d1117;color:#e6edf3}
+header{background:#161b22;padding:14px 20px;border-bottom:1px solid #30363d;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:20px;color:#fff}
+header .info{font-size:11px;color:#8b949e}
+nav{display:flex;gap:4px;padding:10px 20px;background:#161b22;border-bottom:1px solid #30363d;flex-wrap:wrap}
+nav button{background:#21262d;color:#8b949e;border:1px solid #30363d;padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer}
+nav button.a{color:#f0f6fc;border-color:#388bfd}
+.tc{display:none;padding:16px 20px;max-width:1400px;margin:auto}
+.tc.a{display:block}
+.g2{display:grid;grid-template-columns:380px 1fr;gap:14px}
+.cd{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px;margin-bottom:12px}
+.cd h2{font-size:14px;font-weight:600;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #30363d}
+label{display:block;font-size:10px;color:#8b949e;margin-bottom:3px;text-transform:uppercase;font-weight:700}
+input{width:100%;padding:7px 10px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#fff;font-size:13px}
+input:focus{outline:none;border-color:#388bfd}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fg{margin-bottom:10px}
+.btn{width:100%;padding:9px;background:#238636;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
+.btn:hover{background:#2ea043}
+.btn2{background:#1f3a6e}
+.btn2:hover{background:#2b4e95}
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.pill{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:4px 10px;border-radius:16px;font-size:11px;cursor:pointer}
+.pill:hover{background:#30363d;border-color:#388bfd}
+.res{display:none}
+.res.show{display:block}
+.center{text-align:center;padding:16px 0}
+.score{font-size:56px;font-weight:800}
+.level{font-size:16px;font-weight:bold;margin-top:3px}
+.bar{height:8px;background:#222;border-radius:4px;overflow:hidden;margin:10px 0}
+.fl{height:100%;width:0;border-radius:4px;transition:width .8s}
+.fl.K{background:#f85149}
+.fl.Y{background:#e3b341}
+.fl.O{background:#d29922}
+.fl.D{background:#c69026}
+.fl.L{background:#3fb950}
+.badges{display:flex;justify-content:center;gap:6px;margin-bottom:8px}
+.badge{padding:3px 9px;border-radius:14px;font-size:11px;font-weight:700}
+.badge.bA{background:#1f4d2e;color:#3fb950}
+.badge.bB{background:#271d0c;color:#e3b341}
+.badge.bC{background:#1c2128;color:#8b949e}
+.badge.cH{background:#1f4d2e;color:#3fb950}
+.badge.cM{background:#271d0c;color:#e3b341}
+.badge.cL{background:#3b1016;color:#f85149}
+.interp{background:#0d1117;border:1px solid #30363d;border-left:3px solid #388bfd;padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;line-height:1.5}
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+.mb{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:9px;text-align:center}
+.mb .v{font-size:16px;font-weight:700}
+.mb .l{font-size:9px;color:#8b949e;margin-top:2px;text-transform:uppercase}
+.expl{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:12px;line-height:1.6;font-size:12px;white-space:pre-wrap;max-height:400px;overflow:auto;margin-top:10px}
+.status{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px;font-size:11px;margin-top:8px}
+.log{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:8px;font-family:Consolas,monospace;font-size:10px;height:80px;overflow:auto;margin-top:6px;color:#8b949e}
+footer{text-align:center;color:#484f58;padding:14px;font-size:11px;border-top:1px solid #21262d;margin-top:16px}
+#mapDiv{height:500px;border-radius:10px;border:1px solid #30363d}
+.alert-item{background:#0d1117;border:1px solid #30363d;border-left:3px solid #e3b341;border-radius:0 6px 6px 0;padding:8px 12px;margin-bottom:6px;font-size:12px}
+.alert-item .at{font-size:10px;color:#484f58}
+.zone-card{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.zone-card .zname{font-size:14px;font-weight:bold;color:#f0f6fc}
+.zone-card .zdetail{font-size:11px;color:#8b949e;margin-top:3px}
+.zone-card .zpop{font-size:11px;color:#d29922;margin-top:2px}
+</style>
+</head>
+<body>
+<header>
+<h1>SeismoPattern v4</h1>
+<div class="info">AUC 0.9087 | ISC+USGS | 16K Fay | 20K GPS | NLP</div>
+</header>
+<nav>
+<button class="a" onclick="stab(0,this)">Manuel</button>
+<button onclick="stab(1,this)">Canli/Tarihsel</button>
+<button onclick="stab(2,this)">Harita</button>
+<button onclick="stab(3,this)">Uyarilar</button>
+<button onclick="stab(4,this)">Bolgeler</button>
+<button onclick="window.open('/docs','_blank')">API Docs</button>
+<button onclick="stab(5,this)">Dual Risk</button>
+</nav>
+
+<div class="tc a" id="t0"><div class="g2">
+<div><div class="cd"><h2>Manuel Analiz</h2>
+<div class="pills">
+<div class="pill" onclick="lp('act')">Aktivasyon</div>
+<div class="pill" onclick="lp('qui')">Sessizlik</div>
+<div class="pill" onclick="lp('nor')">Normal</div>
+<div class="pill" onclick="lp('kah')">Kahramanmaras</div>
+</div>
+<div class="r2"><div class="fg"><label>Son 1 yil</label><input id="c0" type="number" value="15"></div><div class="fg"><label>1-2 yil</label><input id="c1" type="number" value="8"></div></div>
+<div class="r2"><div class="fg"><label>2-3 yil</label><input id="c2" type="number" value="6"></div><div class="fg"><label>90g hizlanma</label><input id="accel" type="number" step="0.1" value="2.5"></div></div>
+<div class="r2"><div class="fg"><label>b (1y)</label><input id="b1" type="number" step="0.01" value="0.78"></div><div class="fg"><label>b (3y)</label><input id="b3" type="number" step="0.01" value="0.92"></div></div>
+<div class="r2"><div class="fg"><label>Maks Mw</label><input id="mxmw" type="number" step="0.1" value="6.2"></div><div class="fg"><label>Ort Mw</label><input id="mnmw" type="number" step="0.1" value="5.4"></div></div>
+<div class="r2"><div class="fg"><label>Uzk 1y</label><input id="d1" type="number" value="110"></div><div class="fg"><label>Uzk 3y</label><input id="d3" type="number" value="140"></div></div>
+<div class="r2"><div class="fg"><label>Dep 1y</label><input id="dep1" type="number" value="25"></div><div class="fg"><label>Dep 3y</label><input id="dep3" type="number" value="32"></div></div>
+<div class="r2"><div class="fg"><label>Z akt</label><input id="zr1" type="number" step="0.1" value="1.5"></div><div class="fg"><label>Z b</label><input id="zb1" type="number" step="0.1" value="1.2"></div></div>
+<div class="r2"><div class="fg"><label>Z Mw</label><input id="zmx" type="number" step="0.1" value="1.8"></div><div class="fg"><label>Z mesafe</label><input id="zd1" type="number" step="0.1" value="0.8"></div></div>
+<button class="btn" id="manualBtn" onclick="doM()">Analiz Et</button>
+</div></div>
+<div>
+<div class="cd res" id="rm"><h2>Sonuc</h2>
+<div class="center"><div class="score" id="mS">-</div><div class="level" id="mL">-</div><div class="bar"><div class="fl" id="mF"></div></div></div>
+<div class="badges"><div class="badge" id="mP">-</div><div class="badge" id="mC">-</div></div>
+<div class="interp" id="mI">-</div>
+<div class="mg"><div class="mb"><div class="v" id="mQr">-</div><div class="l">Quiescence</div></div><div class="mb"><div class="v" id="mAc">-</div><div class="l">Hizlanma</div></div><div class="mb"><div class="v" id="mBd">-</div><div class="l">b-Dusus</div></div></div>
+<div class="mg"><div class="mb"><div class="v" id="mA">-</div><div class="l">TIP_A</div></div><div class="mb"><div class="v" id="mB">-</div><div class="l">TIP_B</div></div><div class="mb"><div class="v" id="mCC">-</div><div class="l">TIP_C</div></div></div>
+</div></div></div></div>
+
+<div class="tc" id="t1"><div class="g2">
+<div><div class="cd"><h2>Canli / Tarihsel</h2>
+<div class="r2"><div class="fg"><label>Enlem</label><input id="rlat" type="number" step="0.01" value="40.77"></div><div class="fg"><label>Boylam</label><input id="rlon" type="number" step="0.01" value="29.00"></div></div>
+<div class="r2"><div class="fg"><label>Yaricap km</label><input id="rrad" type="number" value="300"></div><div class="fg"><label>Min Mw</label><input id="rmag" type="number" step="0.5" value="2.5"></div></div>
+<div class="fg"><label>Tarih (bos=bugun)</label><input id="rdate" placeholder="YYYY-MM-DD"></div>
+<div class="pills">
+<div class="pill" onclick="srt(40.77,29.00,'')">Marmara</div>
+<div class="pill" onclick="srt(37.22,37.02,'2023-01-06')">K.Maras Once</div>
+<div class="pill" onclick="srt(40.75,29.86,'1999-07-17')">Izmit Once</div>
+<div class="pill" onclick="srt(38.30,142.37,'2011-02-11')">Tohoku Once</div>
+<div class="pill" onclick="srt(45.50,-125.00,'')">Cascadia</div>
+<div class="pill" onclick="srt(33.00,135.00,'')">Nankai</div>
+<div class="pill" onclick="srt(-12.00,-77.00,'')">Lima</div>
+</div>
+<button class="btn btn2" id="rtBtn" onclick="doRT()">Veri Cek & Analiz</button>
+<div class="status" id="rtSt">Hazir.</div>
+<div class="log" id="rtLog"></div>
+</div></div>
+<div>
+<div class="cd res" id="rr"><h2>Sonuc</h2>
+<div class="center"><div class="score" id="rS">-</div><div class="level" id="rL">-</div><div class="bar"><div class="fl" id="rF"></div></div></div>
+<div class="badges"><div class="badge" id="rP">-</div><div class="badge" id="rC2">-</div></div>
+<div class="interp" id="rI">-</div>
+<div class="mg"><div class="mb"><div class="v" id="rN">-</div><div class="l">Olay</div></div><div class="mb"><div class="v" id="rMc">-</div><div class="l">Mc</div></div><div class="mb"><div class="v" id="rAc">-</div><div class="l">Hizlanma</div></div></div>
+<div class="mg"><div class="mb"><div class="v" id="rB1">-</div><div class="l">b 1y</div></div><div class="mb"><div class="v" id="rB3">-</div><div class="l">b 3y</div></div><div class="mb"><div class="v" id="rQr">-</div><div class="l">Quiescence</div></div></div>
+<div class="mg"><div class="mb"><div class="v" id="rA">-</div><div class="l">TIP_A</div></div><div class="mb"><div class="v" id="rB">-</div><div class="l">TIP_B</div></div><div class="mb"><div class="v" id="rCC">-</div><div class="l">TIP_C</div></div></div>
+<div class="expl" id="rEx"></div>
+<div style="margin-top:8px;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:10px;font-size:11px;color:#8b949e">
+  <span style="color:#f0f6fc;font-weight:bold">Ek Model Bilgisi:</span><br>
+  Kalibre Skor: <span id="rCal">-</span>
+</div>
+<div style="margin-top:6px;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:10px;font-size:11px;color:#8b949e">
+  <span style="color:#f0f6fc;font-weight:bold">Belirsizlik (Hızlı tahmin ±std):</span>
+  <span id="rUnc">Hesaplanmadı</span>
+  <button class="pill" style="font-size:10px;margin-left:8px" onclick="calcUncertainty()">Hesapla</button>
+</div>
+<div style="margin-top:10px"><button class="btn" style="background:#1f3a6e" onclick="downloadPDF()">PDF Rapor Indir</button></div>
+</div></div></div></div>
+
+<div class="tc" id="t2">
+<div class="cd"><h2>Dunya Risk Haritasi</h2>
+<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap">
+<label style="font-size:12px;margin:0;cursor:pointer"><input type="checkbox" id="chkMon" checked onchange="togLyr('mon')"> Izlenen</label>
+<label style="font-size:12px;margin:0;cursor:pointer"><input type="checkbox" id="chkEv" onchange="togLyr('ev')"> Tarihsel</label>
+<button class="pill" onclick="zoomAll()">Tum Bolgeler</button>
+</div>
+<div id="mapDiv"></div>
+<div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:#8b949e;flex-wrap:wrap">
+<span style="color:#f85149">&#9679; KRITIK</span>
+<span style="color:#e3b341">&#9679; YUKSEK</span>
+<span style="color:#d29922">&#9679; ORTA</span>
+<span style="color:#c69026">&#9679; DIKKAT</span>
+<span style="color:#3fb950">&#9679; DUSUK</span>
+</div></div>
+<div class="cd" id="mapPanel" style="display:none"><h2 id="mpTitle">-</h2><div id="mpBody"></div></div>
+</div>
+
+<div class="tc" id="t3"><div class="cd"><h2>Uyarilar</h2>
+<div style="display:flex;gap:8px;margin-bottom:12px"><button class="pill" onclick="loadAlerts()">Yenile</button><span style="font-size:11px;color:#8b949e" id="alertCount">Yukleniyor...</span></div>
+<div id="alertList"></div>
+</div></div>
+
+<div class="tc" id="t4"><div class="cd"><h2>Bilinen Bolgeler</h2>
+<div style="font-size:12px;color:#8b949e;margin-bottom:12px">Analiz butonuyla canli veri cekip risk hesaplayabilirsiniz.</div>
+<div id="zones"></div>
+</div></div>
+
+<div class="tc" id="t5"><div class="cd">
+<h2>Dual Risk Framework — Uzun Vade + Kısa Vade Ayrimi</h2>
+<div style="font-size:12px;color:#8b949e;margin-bottom:12px">
+Uzun vadeli segment tehlikesi (kayma acigi, coupling, GPS) ile
+kisa vadeli sismik anomali riskini ayri gosterir.
+</div>
+<div style="display:flex;gap:8px;margin-bottom:14px">
+<button class="pill" onclick="loadDualTable()">Tum 25 Bolge</button>
+<button class="pill" onclick="dualZone('marmara')">Marmara</button>
+<button class="pill" onclick="dualZone('cascadia')">Cascadia</button>
+<button class="pill" onclick="dualZone('manila_trench')">Manila</button>
+<button class="pill" onclick="dualZone('nankai')">Nankai</button>
+</div>
+<div id="dualTable"></div>
+<div class="cd" id="dualDetail" style="display:none;margin-top:12px">
+<h2 id="dualTitle">-</h2>
+<div class="mg">
+<div class="mb"><div class="v" id="dLT">-</div><div class="l">Uzun Vade (LT)</div></div>
+<div class="mb"><div class="v" id="dST">-</div><div class="l">Kisa Vade (ST)</div></div>
+<div class="mb"><div class="v" id="dCOMB">-</div><div class="l">Birlesik</div></div>
+</div>
+<div class="mg">
+<div class="mb"><div class="v" id="dH30">-</div><div class="l">30 gun ufku</div></div>
+<div class="mb"><div class="v" id="dH1y">-</div><div class="l">1 yil ufku</div></div>
+<div class="mb"><div class="v" id="dH5y">-</div><div class="l">5 yil ufku</div></div>
+</div>
+<div class="expl" id="dualSummary"></div>
+</div>
+<div style="margin-top:10px;background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px">
+  <div style="font-size:12px;font-weight:bold;color:#f0f6fc;margin-bottom:8px">
+    Quality-Adjusted Short-Term Risk
+    <button class="pill" style="font-size:10px;margin-left:8px" id="qarBtn" onclick="loadQAR()">Hesapla</button>
+  </div>
+  <div id="qarResult" style="font-size:12px;color:#8b949e">
+    Butona basin...
+  </div>
+</div>
+</div></div>
+
+<footer>SeismoPattern v4 | ISC+USGS | OOS AUC 0.9087</footer>
+
+<script>
+
+let rtBusy = false;
+let manualBusy = false;
+
+var PS={act:{c0:45,c1:20,c2:15,accel:4.2,b1:.72,b3:.91,mxmw:6.8,mnmw:5.8,d1:95,d3:140,dep1:25,dep3:32,zr1:2.1,zb1:1.5,zmx:2.3,zd1:.9},qui:{c0:3,c1:12,c2:18,accel:0,b1:.68,b3:.95,mxmw:5.8,mnmw:5.2,d1:85,d3:130,dep1:18,dep3:28,zr1:-1.8,zb1:2.1,zmx:.8,zd1:1.5},nor:{c0:5,c1:5,c2:5,accel:1,b1:1.05,b3:1.02,mxmw:5.9,mnmw:5.3,d1:120,d3:118,dep1:40,dep3:42,zr1:.1,zb1:-.2,zmx:.3,zd1:.1},kah:{c0:26,c1:15,c2:30,accel:2.22,b1:1.2,b3:.93,mxmw:5.9,mnmw:5.1,d1:100,d3:165,dep1:12,dep3:13,zr1:.8,zb1:.5,zmx:1.1,zd1:1.2}};
+
+function lp(k){var p=PS[k];for(var i in p){var e=document.getElementById(i);if(e)e.value=p[i];}}
+function gv(i,d){var v=parseFloat(document.getElementById(i).value);return isNaN(v)?(d||0):v;}
+function srt(a,b,d){document.getElementById('rlat').value=a;document.getElementById('rlon').value=b;document.getElementById('rdate').value=d||'';}
+
+function stab(n,el){
+  document.querySelectorAll('.tc').forEach(function(t){t.classList.remove('a');});
+  document.querySelectorAll('nav button').forEach(function(b){b.classList.remove('a');});
+  document.getElementById('t'+n).classList.add('a');
+  el.classList.add('a');
+  if(n===2) initMap();
+  if(n===3) loadAlerts();
+  if(n===4) loadZones();
+}
+
+function fc(s){if(s>=.75)return'K';if(s>=.6)return'Y';if(s>=.45)return'O';if(s>=.3)return'D';return'L';}
+function fco(s){if(s>=.75)return'#f85149';if(s>=.6)return'#e3b341';if(s>=.45)return'#d29922';if(s>=.3)return'#c69026';return'#3fb950';}
+function fmt(v){return v==null?'-':(v*100).toFixed(1)+'%';}
+
+function showR(pre,d,ex){
+  var pct=Math.round((d.risk_score||0)*100), cl=fc(d.risk_score||0);
+
+  document.getElementById(pre+'S').textContent=pct+'%';
+  document.getElementById(pre+'L').textContent=d.risk_level||'-';
+
+  var f=document.getElementById(pre+'F');
+  if(f){
+    f.style.width=pct+'%';
+    f.className='fl '+cl;
+  }
+
+  document.getElementById(pre+'I').textContent=d.interpretation||'-';
+
+  var p=document.getElementById(pre+'P');
+  if(p){
+    p.textContent=d.pattern_type||'-';
+    p.className='badge b'+(d.pattern_type||'C').slice(-1);
+  }
+
+  var c=document.getElementById(pre==='m'?'mC':'rC2');
+  if(c){
+    var cv=d.confidence||'?';
+    c.textContent='Guven: '+cv;
+    c.className='badge c'+(cv==='YUKSEK'?'H':cv==='ORTA'?'M':'L');
+  }
+
+  var cs = d.component_scores || {};
+
+  function fmtComp(v){
+    if(v===null || v===undefined) return '-';
+    if(typeof v === 'number') return (v*100).toFixed(1)+'%';
+    return String(v);
+  }
+
+  var ae=document.getElementById(pre+'A');
+  if(ae) ae.textContent=fmtComp(cs.TIP_A);
+
+  var be=document.getElementById(pre+'B');
+  if(be) be.textContent=fmtComp(cs.TIP_B);
+
+  var ce=document.getElementById(pre+'CC');
+  if(ce) ce.textContent=fmtComp(cs.TIP_C);
+
+  // Sadece realtime panelde kalibre skorunu doldur
+  if(pre==='r'){
+    var cal=document.getElementById('rCal');
+    if(cal) cal.textContent=fmtComp(cs.CALIBRATED);
+  }
+
+  if(ex){
+    for(var k in ex){
+      var el=document.getElementById(k);
+      if(el) el.textContent=ex[k];
+    }
+  }
+
+  document.getElementById(pre==='m'?'rm':'rr').classList.add('show');
+}
+
+async function doM(){
+  if(manualBusy) return;
+  manualBusy = true;
+
+  const btn = document.getElementById('manualBtn');
+  const oldTxt = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Analiz ediliyor...';
+
+  try{
+    var c0=gv('c0'),c1=gv('c1'),c2=gv('c2');
+    var body={count_0_1y:c0,count_1_2y:c1,count_2_3y:c2,accel_90d:gv('accel',1),
+      w1_b_value:gv('b1'),w3_b_value:gv('b3'),w1_max_mw:gv('mxmw'),w1_mean_mw:gv('mnmw'),
+      w1_mean_dist_km:gv('d1'),w3_mean_dist_km:gv('d3'),
+      w1_mean_depth_km:gv('dep1'),w3_mean_depth_km:gv('dep3'),
+      z_rate_1y:gv('zr1'),z_b_value_1y:gv('zb1'),z_max_mw_1y:gv('zmx'),z_dist_1y:gv('zd1'),
+      w1_n_events:c0,w3_n_events:c0+c1+c2,monthly_slope_36m:0,w1_std_mw:.5,
+      w3_mean_mw:gv('mnmw'),w3_max_mw:gv('mxmw'),w1_std_dist_km:50,w1_std_depth_km:10,
+      w1_migration_slope_km_day:0,w3_migration_slope_km_day:0,
+      z_rate_3y:gv('zr1')*.7,z_b_value_3y:gv('zb1')*.5,z_depth_1y:.3};
+
+    var r=await fetch('/api/predict',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+
+    var d=await r.json();
+    if(d.error){alert(d.error);return;}
+
+    var qr=c0/(((c1+c2)/2)+.001), bd=(body.w3_b_value-body.w1_b_value).toFixed(3);
+    showR('m',d,{mQr:qr.toFixed(2),mAc:(body.accel_90d||0).toFixed(2)+'x',mBd:(bd>0?'+':'')+bd});
+  }catch(e){
+    alert('Hata: '+e.message);
+  }finally{
+    manualBusy = false;
+    btn.disabled = false;
+    btn.textContent = oldTxt;
+  }
+}
+
+function rlog(m){var l=document.getElementById('rtLog');l.textContent+='['+new Date().toLocaleTimeString('tr')+'] '+m+'\n';l.scrollTop=l.scrollHeight;}
+
+async function doRT(){
+  if(rtBusy) return;
+  rtBusy = true;
+
+  const btn = document.getElementById('rtBtn');
+  const oldTxt = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Veri cekiliyor...';
+
+  try{
+    var lat=parseFloat(document.getElementById('rlat').value);
+    var lon=parseFloat(document.getElementById('rlon').value);
+    var rad=parseFloat(document.getElementById('rrad').value)||300;
+    var mag=parseFloat(document.getElementById('rmag').value)||2.5;
+    var dt=document.getElementById('rdate').value.trim();
+
+    if(isNaN(lat)||isNaN(lon)){alert('Koordinat girin');return;}
+
+    document.getElementById('rr').classList.remove('show');
+    document.getElementById('rtLog').textContent='';
+    document.getElementById('rtSt').textContent='Sorgulaniyor...';
+    rlog('Konum: '+lat+', '+lon+' | '+rad+'km | Mw'+mag+'+'+(dt?' | '+dt:''));
+
+    var ep=dt?'/api/historical':'/api/realtime';
+    var body={lat:lat,lon:lon,radius_km:rad,min_mag:mag};
+    if(dt) body.ref_date=dt;
+
+    var r=await fetch(ep,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+
+    var d=await r.json();
+    if(d.error){
+      document.getElementById('rtSt').textContent='Hata: '+d.error;
+      rlog(d.error);
+      return;
+    }
+
+    var m=d.meta||{}, f=d.features||{};
+    var srcLabel = (m.source || '?');
+    if(m.cache){
+      srcLabel = srcLabel + ' [CACHE]';
+    }
+    rlog((m.n_total||0)+' olay ('+srcLabel+')');
+    rlog(d.risk_level+' ('+(d.risk_score*100).toFixed(1)+'%)');
+    var srcLabel = (m.source || '?');
+    if(m.cache){
+      srcLabel = srcLabel + ' (cache)';
+    }
+    document.getElementById('rtSt').textContent =
+      (m.n_total||0)+' olay | '+srcLabel+' | '+d.risk_level;
+
+    showR('r',d,{
+      rN:m.n_total||'-',
+      rMc:m.mc||'-',
+      rAc:f.accel_90d!=null?parseFloat(f.accel_90d).toFixed(2)+'x':'-',
+      rB1:f.w1_b_value!=null?parseFloat(f.w1_b_value).toFixed(3):'-',
+      rB3:f.w3_b_value!=null?parseFloat(f.w3_b_value).toFixed(3):'-',
+      rQr:d.quiescence_ratio!=null?parseFloat(d.quiescence_ratio).toFixed(2):'-'
+    });
+
+    // Hazard ve quality-adjusted bilgisi
+    if(d.hazards){
+      var hzHtml='<div style="margin-top:8px;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:10px">';
+      hzHtml+='<div style="font-size:11px;font-weight:bold;color:#f0f6fc;margin-bottom:6px">Ufuk Bazli Tehlike Skorlari</div>';
+      hzHtml+='<div class="mg">';
+      hzHtml+='<div class="mb"><div class="v">%'+(d.hazards['30d']||'-')+'</div><div class="l">30 gun</div></div>';
+      hzHtml+='<div class="mb"><div class="v">%'+(d.hazards['1y']||'-')+'</div><div class="l">1 yil</div></div>';
+      hzHtml+='<div class="mb"><div class="v">%'+(d.hazards['5y']||'-')+'</div><div class="l">5 yil</div></div>';
+      hzHtml+='</div></div>';
+
+      var exEl=document.getElementById('rEx');
+      if(exEl) exEl.insertAdjacentHTML('beforebegin', hzHtml);
+    }
+
+    if(d.quality_adjusted){
+      var qa=d.quality_adjusted;
+      var qaHtml='<div style="margin-top:8px;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:10px">';
+      qaHtml+='<div style="font-size:11px;font-weight:bold;color:#f0f6fc;margin-bottom:6px">Quality-Adjusted Risk</div>';
+      qaHtml+='<div style="font-size:12px;color:#8b949e">';
+      qaHtml+='Ham: '+(qa.st_raw!=null?(qa.st_raw*100).toFixed(1)+'%':'-')+' | ';
+      qaHtml+='Debiased: '+(qa.st_debiased!=null?(qa.st_debiased*100).toFixed(1)+'%':'-')+' | ';
+      qaHtml+='<span style="color:#f0f6fc;font-weight:bold">Adjusted: '+(qa.st_adjusted!=null?(qa.st_adjusted*100).toFixed(1)+'%':'-')+'</span>';
+      qaHtml+='<br>Guven: '+qa.confidence+' | Tektonik: '+qa.tectonic_class;
+      qaHtml+='</div></div>';
+
+      var exEl2=document.getElementById('rEx');
+      if(exEl2) exEl2.insertAdjacentHTML('beforebegin', qaHtml);
+    }
+
+    // Meta kaynak temizle
+    var src = (m.source||'?').replace('cache','ISC+USGS');
+    document.getElementById('rtSt').textContent =
+      (m.n_total||0)+' olay | '+src+(m.cache?' [önbellek]':'')+' | '+d.risk_level;
+
+    document.getElementById('rEx').textContent=d.explanation||'';
+  }catch(e){
+    document.getElementById('rtSt').textContent='Hata: '+e.message;
+    rlog(e.message);
+  }finally{
+    rtBusy = false;
+    btn.disabled = false;
+    btn.textContent = oldTxt;
+  }
+}
+
+var myMap=null, monLyr=null, evLyr=null;
+function initMap(){
+  if(myMap) return;
+  myMap=L.map('mapDiv',{center:[25,30],zoom:2,maxZoom:12});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'CartoDB',subdomains:'abcd'}).addTo(myMap);
+  monLyr=L.layerGroup().addTo(myMap);
+  evLyr=L.layerGroup();
+  fetch('/api/monitor_data').then(function(r){return r.json();}).then(function(data){
+    if(!data||!data.length) return;
+    data.forEach(function(d){
+      var col=fco(d.score), rad=Math.max(10,d.score*28);
+      L.circleMarker([d.lat,d.lon],{radius:rad,color:col,fillColor:col,fillOpacity:.6,weight:2}).addTo(monLyr).on('click',function(){showMP(d);});
+      L.circleMarker([d.lat,d.lon],{radius:rad+6,color:col,fillOpacity:0,weight:1,opacity:.3,dashArray:'4,4'}).addTo(monLyr);
+      var lbl=L.divIcon({html:'<div style="color:'+col+';font-size:10px;font-weight:bold;text-shadow:0 0 3px #000;white-space:nowrap">'+d.name+' '+Math.round(d.score*100)+'%</div>',className:'',iconAnchor:[-rad-3,0]});
+      L.marker([d.lat,d.lon],{icon:lbl}).addTo(monLyr);
+    });
+    myMap.fitBounds(L.latLngBounds(data.map(function(d){return[d.lat,d.lon];})),{padding:[40,40]});
+  });
+  fetch('/api/scored_events').then(function(r){return r.json();}).then(function(data){
+    if(!data||!data.length) return;
+    data.forEach(function(e){
+      L.circleMarker([e.lat,e.lon],{radius:Math.max(3,e.score*8),color:fco(e.score),fillColor:fco(e.score),fillOpacity:.4,weight:1}).addTo(evLyr).bindTooltip('Mw'+e.mw.toFixed(1)+' | '+e.date+' | '+Math.round(e.score*100)+'%');
+    });
+  });
+  myMap.on('click',function(e){
+    var la=e.latlng.lat.toFixed(3), lo=e.latlng.lng.toFixed(3);
+    L.popup().setLatLng(e.latlng).setContent('<div style="font-size:12px">'+la+', '+lo+'<br><a href="/api/geodynamic?lat='+la+'&lon='+lo+'" target="_blank" style="color:#388bfd">Analiz Et</a></div>').openOn(myMap);
+  });
+}
+function togLyr(n){if(n==='mon'){if(myMap.hasLayer(monLyr))myMap.removeLayer(monLyr);else myMap.addLayer(monLyr);}if(n==='ev'){if(myMap.hasLayer(evLyr))myMap.removeLayer(evLyr);else myMap.addLayer(evLyr);}}
+function zoomAll(){if(monLyr&&myMap) try{myMap.fitBounds(monLyr.getBounds(),{padding:[40,40]});}catch(e){}}
+function showMP(d){
+  document.getElementById('mpTitle').textContent=d.name+' - '+d.level+' ('+Math.round(d.score*100)+'%)';
+  var h='<div class="mg"><div class="mb"><div class="v" style="color:'+fco(d.score)+'">'+Math.round(d.score*100)+'%</div><div class="l">Risk</div></div>';
+  h+='<div class="mb"><div class="v">'+(d.n_events||'-')+'</div><div class="l">Olay</div></div>';
+  h+='<div class="mb"><div class="v">'+(d.pattern||'-')+'</div><div class="l">Sablon</div></div></div>';
+  h+='<div class="mg"><div class="mb"><div class="v">'+(d.b_value!=null?d.b_value.toFixed(3):'-')+'</div><div class="l">b-degeri</div></div>';
+  h+='<div class="mb"><div class="v">'+(d.quiescence!=null?d.quiescence.toFixed(2):'-')+'</div><div class="l">Quiescence</div></div>';
+  h+='<div class="mb"><div class="v">'+(d.gps_vh!=null?d.gps_vh.toFixed(1):'-')+'</div><div class="l">GPS mm/yr</div></div></div>';
+  h+='<div style="margin-top:6px;font-size:10px;color:#484f58">'+(d.source||'')+' | '+(d.timestamp||'').substring(0,16)+'</div>';
+  document.getElementById('mpBody').innerHTML=h;
+  document.getElementById('mapPanel').style.display='block';
+}
+
+async function loadAlerts(){
+  try{
+    var r=await fetch('/api/alerts'); var d=await r.json();
+    document.getElementById('alertCount').textContent='Son 7 gun: '+(d.total_7d||0)+' uyari';
+    var html='';
+    if(!d.recent||!d.recent.length){html='<div style="color:#8b949e;padding:20px;text-align:center">Uyari yok</div>';}
+    else{d.recent.forEach(function(a){html+='<div class="alert-item"><strong>['+a.type+']</strong> '+a.message+'<div class="at">'+a.timestamp.substring(0,16)+'</div></div>';});}
+    document.getElementById('alertList').innerHTML=html;
+  }catch(e){document.getElementById('alertList').textContent='Hata: '+e.message;}
+}
+
+async function loadZones(){
+  var r=await fetch('/api/zones'); var z=await r.json(); var html='';
+  for(var k in z){var a=z[k];
+    html+='<div class="zone-card"><div style="flex:1">';
+    html+='<div class="zname">'+a.name+'</div>';
+    html+='<div class="zdetail">'+a.fault_name+' | '+a.fault_type+' | Mw '+a.expected_mw+'</div>';
+    html+='<div class="zdetail">Son: '+a.last_major+' (Mw '+a.last_major_mw+') | Tekrar ~'+a.recurrence_years+' yil</div>';
+    if(a.population_risk) html+='<div class="zpop">Nufus: '+a.population_risk+'</div>';
+    html+='</div><button class="btn2 btn" style="width:auto;font-size:12px;padding:6px 12px" onclick="srt('+a.lat+','+a.lon+',\'\');stab(1,document.querySelectorAll(\'nav button\')[1]);setTimeout(doRT,300)">Analiz</button></div>';
+  }
+  document.getElementById('zones').innerHTML=html;
+}
+
+function downloadPDF(){
+  var lat=document.getElementById('rlat').value;
+  var lon=document.getElementById('rlon').value;
+  var dt=document.getElementById('rdate').value.trim();
+  var url='/api/pdf?lat='+lat+'&lon='+lon;
+  if(dt) url+='&ref_date='+dt;
+  window.open(url,'_blank');
+}
+
+async function calcUncertainty(){
+  var lat=parseFloat(document.getElementById('rlat').value);
+  var lon=parseFloat(document.getElementById('rlon').value);
+  var e=document.getElementById('rUnc');
+  e.textContent='Hesaplanıyor...';
+  try{
+    var r=await fetch('/api/uncertainty?lat='+lat+'&lon='+lon);
+    var d=await r.json();
+    if(d.error){ e.textContent='Hata: '+d.error; return; }
+    e.textContent='±'+d.std.toFixed(3)+' (95% CI: '+d.ci_lower.toFixed(3)+' - '+d.ci_upper.toFixed(3)+')';
+  }catch(ex){ e.textContent='Hata: '+ex.message; }
+}
+
+async function loadDualTable(){
+  document.getElementById('dualTable').innerHTML='<div style="color:#8b949e">Yukleniyor...</div>';
+  try{
+    var r=await fetch('/api/hazard_table');
+    var d=await r.json();
+    if(d.error){document.getElementById('dualTable').textContent=d.error;return;}
+    var html='<table style="width:100%;border-collapse:collapse;font-size:12px">';
+    html+='<tr style="color:#8b949e;border-bottom:1px solid #30363d">';
+    html+='<th style="text-align:left;padding:6px">Bolge</th>';
+    html+='<th style="text-align:right;padding:6px">LT</th>';
+    html+='<th style="text-align:right;padding:6px">ST_adj</th>';
+    html+='<th style="text-align:right;padding:6px">30g</th>';
+    html+='<th style="text-align:right;padding:6px">1y</th>';
+    html+='<th style="text-align:right;padding:6px">5y</th>';
+    html+='<th style="text-align:center;padding:6px">Detay</th>';
+    html+='</tr>';
+    d.forEach(function(row){
+      var score1y=row['1y']||0;
+      var cls=score1y>=3?'#f85149':score1y>=2?'#e3b341':score1y>=1?'#d29922':score1y>=0.5?'#c69026':'#3fb950';
+      var lt=Math.round((row.lt||0)*100);
+      var st=Math.round((row.st_adj||0)*100);
+      html+='<tr style="border-bottom:1px solid #21262d">';
+      html+='<td style="padding:5px;color:#f0f6fc;font-size:11px">'+row.name+'</td>';
+      html+='<td style="padding:5px;text-align:right;font-size:11px">'+lt+'%</td>';
+      html+='<td style="padding:5px;text-align:right;font-size:11px">'+st+'%</td>';
+      html+='<td style="padding:5px;text-align:right;font-size:11px">%'+row['30d']+'</td>';
+      html+='<td style="padding:5px;text-align:right;font-size:11px;color:'+cls+'"><b>%'+score1y+'</b></td>';
+      html+='<td style="padding:5px;text-align:right;font-size:11px">%'+row['5y']+'</td>';
+      html+='<td style="padding:5px;text-align:center"><button class="pill" onclick="dualZone(\''+row.key+'\')">→</button></td>';
+      html+='</tr>';
+    });
+    html+='</table>';
+    html+='<div style="font-size:10px;color:#484f58;margin-top:6px">Renkler 1y hazard skoruna gore: kirmizi>3% sarı>2% turuncu>1% kahve>0.5% yesil</div>';
+    document.getElementById('dualTable').innerHTML=html;
+  }catch(e){document.getElementById('dualTable').textContent='Hata: '+e.message;}
+}
+
+async function dualZone(key){
+  document.getElementById('dualDetail').style.display='none';
+  try{
+    var r=await fetch('/api/dual_risk?zone='+key);
+    var d=await r.json();
+    if(d.error){alert(d.error);return;}
+    var lt=d.long_term||{};
+    var st=d.short_term||{};
+    var cb=d.combined||{};
+    var hz=d.horizons||{};
+    var z=d.zone||{};
+    document.getElementById('dualTitle').textContent=(z.name||key)+' — Dual Risk Analizi';
+    function pct(v){return v!=null?Math.round(v*100)+'%':'-';}
+    document.getElementById('dLT').textContent=pct(lt.score);
+    document.getElementById('dST').textContent=pct(st.score);
+    document.getElementById('dCOMB').textContent=pct(cb.score);
+    document.getElementById('dH30').textContent='%'+(hz['30d']||'-');
+    document.getElementById('dH1y').textContent='%'+(hz['1y']||'-');
+    document.getElementById('dH5y').textContent='%'+(hz['5y']||'-');
+    document.getElementById('dualSummary').textContent=d.summary||'';
+    document.getElementById('dualDetail').style.display='block';
+  }catch(e){alert('Hata: '+e.message);}
+}
+
+var _currentLat = null, _currentLon = null;
+
+async function dualZone(key){
+  document.getElementById('dualDetail').style.display='none';
+  try{
+    var r=await fetch('/api/dual_risk?zone='+key);
+    var d=await r.json();
+    if(d.error){alert(d.error);return;}
+    var lt=d.long_term||{};
+    var st=d.short_term||{};
+    var cb=d.combined||{};
+    var hz=d.horizons||{};
+    var z=d.zone||{};
+    _currentLat = z.lat || d.lat;
+    _currentLon = z.lon || d.lon;
+    document.getElementById('dualTitle').textContent=(z.name||key)+' — Dual Risk Analizi';
+    function pct(v){return v!=null?Math.round(v*100)+'%':'-';}
+    document.getElementById('dLT').textContent=pct(lt.score);
+    document.getElementById('dST').textContent=pct(st.score);
+    document.getElementById('dCOMB').textContent=pct(cb.score);
+    document.getElementById('dH30').textContent='%'+(hz['30d']||'-');
+    document.getElementById('dH1y').textContent='%'+(hz['1y']||'-');
+    document.getElementById('dH5y').textContent='%'+(hz['5y']||'-');
+    document.getElementById('dualSummary').textContent=d.summary||'';
+    document.getElementById('qarResult').textContent='Butona basin...';
+    document.getElementById('dualDetail').style.display='block';
+  }catch(e){alert('Hata: '+e.message);}
+}
+
+async function loadQAR(){
+  if(!_currentLat || !_currentLon){alert('Once bolge secin');return;}
+  document.getElementById('qarResult').textContent='Hesaplaniyor...';
+  try{
+    var r=await fetch('/api/quality_risk?lat='+_currentLat+'&lon='+_currentLon);
+    var d=await r.json();
+    if(d.error){document.getElementById('qarResult').textContent='Hata: '+d.error;return;}
+    var adj=d.st_adjusted!=null?(d.st_adjusted*100).toFixed(1)+'%':'-';
+    var deb=d.st_debiased!=null?(d.st_debiased*100).toFixed(1)+'%':'-';
+    var raw=d.st_raw!=null?(d.st_raw*100).toFixed(1)+'%':'-';
+    var html='<span style="color:#f0f6fc">Adjusted: '+adj+'</span> | ';
+    html+='Debiased: '+deb+' | Ham: '+raw+'<br>';
+    html+='Kalite Ceza: -'+(d.quality_penalty*100).toFixed(1)+'% | ';
+    html+='Tektonik: -'+(d.tectonic_penalty*100).toFixed(1)+'% | ';
+    html+='Guven: '+d.confidence+'<br>';
+    html+='Tektonik Sinif: '+d.tectonic_class;
+    document.getElementById('qarResult').innerHTML=html;
+  }catch(e){document.getElementById('qarResult').textContent='Hata: '+e.message;}
+}
+
+lp('act');
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+
+# Large data files
+data/gps/midas_velocities.txt
+data/faults/gem_active_faults.geojson
+data/gcmt_text1.txt
+data/gcmt_text2.txt
+data/gcmt_text3.txt
+
+# Large output catalogs
+output/all_earthquakes.csv
+output/all_earthquakes_declustered.csv
+output/aftershocks_removed.csv
+
+# Regional caches
+output/isc_regional/
+output/usgs_regional/
+
+# Databases
+output/seismo_pattern.db
+output/monitor.db
+output/prospective/prospective.db
+output/global_scan/global_scan.db
+
+# Generated reports / maps
+output/reports/
+output/seismo_map.html
+output/risk_map.html
+
+# Model binaries
+output/models/*.joblib
+output/calibrated_models/*.joblib
+output/counterfactual/*.joblib
+output/lstm/
+output/model_archive/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.log
+*.tmp
+
+# Training artifacts
+catboost_info/
+
+# Generated outputs (ignore all by default)
+output/
+
+# Keep only minimal metadata if you want
+!output/models/
+output/models/*
+!output/models/feature_lists.json
+!output/models/model_card.json
+
+!output/calibrated_models/
+output/calibrated_models/*
+!output/calibrated_models/calibrated_features.json
+!output/calibrated_models/calibration_report.json
+
+!output/counterfactual/
+output/counterfactual/*
+!output/counterfactual/debiased_features.json
+!output/counterfactual/debiased_report.json
+!output/counterfactual/improved_benchmark.json
+
+# Optional summaries (küçük ve faydalıysa tut)
+!output/dual_risk/
+output/dual_risk/*
+!output/dual_risk/dual_risk_table.csv
+!output/dual_risk/dual_risk_report.json
+
+!output/survival_hazard/
+output/survival_hazard/*
+!output/survival_hazard/hazard_table.csv
+
+!output/stats_validation/
+output/stats_validation/*
+!output/stats_validation/statistical_validation.json
+
+!output/global_scan/
+output/global_scan/*
+!output/global_scan/global_report.json
+
+!output/nlp/
+output/nlp/*
+!output/nlp/precursor_knowledge_base.csv
+
+# Temporary / debug / backup
+app_v1_backup.py
+data_quality_report.txt
+parse_errors.csv
