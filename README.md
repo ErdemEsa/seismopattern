@@ -1,168 +1,117 @@
 # SeismoPattern
 
-**Kalibre edilmiş, çok katmanlı, segment ölçekli olasılıksal deprem risk izleme sistemi**
+Kalibrated, cok katmanli, segment olcekli, olasiliksal deprem risk izleme sistemi.
 
-> ⚠️ Bu sistem deterministik deprem zaman tahmini değildir.  
-> Uzun vadeli segment tehlikesini kısa vadeli sismik anomaliden ayrıştıran, karar destek amaçlı bir risk izleme sistemidir.
-
----
-
-## İçerik
-
-- [Genel Tanım](#genel-tanım)
-- [Öne Çıkan Özellikler](#öne-çıkan-özellikler)
-- [Bilimsel Çerçeve](#bilimsel-çerçeve)
-- [Model Performansı](#model-performansı)
-- [Sistem Mimarisi](#sistem-mimarisi)
-- [Kurulum](#kurulum)
-- [Gerekli Büyük Veri Dosyaları](#gerekli-büyük-veri-dosyaları)
-- [Kullanım](#kullanım)
-- [Web Arayüzü](#web-arayüzü)
-- [API Endpoint'leri](#api-endpointleri)
-- [Dual Risk Framework](#dual-risk-framework)
-- [İzlenen 25 Bölge](#izlenen-25-bölge)
-- [Script Özeti](#script-özeti)
-- [Dosya Yapısı](#dosya-yapısı)
-- [Bilinen Sınırlamalar](#bilinen-sınırlamalar)
-- [Bilimsel Uyarı](#bilimsel-uyarı)
-- [Lisans](#lisans)
+**Deterministik deprem zaman tahmini degildir.**
 
 ---
 
-## Genel Tanım
+## Sistem Nedir
 
-**SeismoPattern**, büyük depremlerin öncesindeki sismik örüntüleri, fay geometrisini, GPS deformasyonunu, Coulomb gerilim transferini ve tarihsel öncü kayıtları birleştirerek **segment ölçekli olasılıksal risk değerlendirmesi** yapan bir sistemdir.
+SeismoPattern, dunya genelinde buyuk depremlerin (Mw 7.0+) oncesinde
+gozlemlenen sismik oruntuleri tespit eden bir risk izleme sistemidir.
 
-Sistem iki temel soruyu ayırır:
+Sistem sunlari yapar:
 
-1. **Uzun vadede bu segment ne kadar tehlikeli?**
-2. **Kısa vadede anormal bir sismik davranış var mı?**
+- Segment olcekli uzun vadeli tehlike degerlendirmesi
+- Kisa vadeli sismik anomali tespiti
+- Cok katmanli risk skoru uretimi
+- Olasiliksal horizon bazli tehlike hesabi
 
-Bu iki sorunun cevabı birleştirilerek:
+Sistem sunlari yapmaz:
 
-- **Long-term Segment Risk**
-- **Short-term Seismic Anomaly Risk**
-- **Combined Operational Risk**
-- **30 gün / 90 gün / 1 yıl / 5 yıl horizon skorları**
-
-üretilir.
-
----
-
-## Öne Çıkan Özellikler
-
-- **Dual Risk Framework**
-  - Long-term segment hazard
-  - Short-term anomaly risk
-  - Combined operational risk
-
-- **Quality-Adjusted Risk**
-  - Debiased model
-  - Veri kalitesi cezası
-  - Tektonik prior
-  - Stabil bölgeleri bastırma
-
-- **Çok Katmanlı Jeodinamik Sistem**
-  - ISC + USGS
-  - GEM aktif fay veritabanı
-  - MIDAS GPS velocity field
-  - Basitleştirilmiş Coulomb stres
-  - NLP tarihsel öncü veri tabanı
-
-- **Web Uygulaması**
-  - Manuel analiz
-  - Canlı / tarihsel analiz
-  - Harita
-  - Uyarı paneli
-  - Bölge paneli
-  - Dual Risk paneli
-  - Swagger dokümantasyonu
-
-- **Otomasyon**
-  - Prospective tracker
-  - Global scan
-  - Alert system
-  - MLOps versiyonlama
+- Belirli bir tarihte deprem olacagini soylememez
+- Kesin uyari vermez
+- Resmi erken uyari sisteminin yerini tutmaz
 
 ---
 
-## Bilimsel Çerçeve
+## Model Performans Metrikleri
 
-Bu sistem **deprem tahmini** yapmaz. Bunun yerine:
-
-- geçmiş örüntülerden öğrenilen
-- istatistiksel olarak kalibre edilmiş
-- olasılıksal risk skorları üretir
-
-### Temel bilimsel katmanlar
-
-- **GCMT katalogu** → büyük ölçekli global sismisite
-- **ISC + USGS** → daha ince bölgesel katalog
-- **GEM Faults** → fay yakınlığı ve segment karmaşıklığı
-- **GPS / MIDAS** → deformasyon ve strain
-- **CFF** → statik gerilim transferi
-- **NLP** → tarihsel precursor kayıtları
+OOS AUC-ROC (5-fold CV)   : 0.7054  CI: 0.6788 - 0.7330
+PR-AUC                    : 0.9101
+Brier Score               : 0.1791
+ECE (isotonic sonrasi)    : 0.0181
+Debiased benchmark AUC    : 0.9219
+DeLong testi              : 6/6 baseline p<0.05
 
 ---
 
-## Model Performansı
+## Veri Kaynaklari
 
-### Standart Model
-- **OOS AUC-ROC**: `0.7054`
-- **95% CI**: `[0.6788, 0.7330]`
-- **PR-AUC**: `0.9101`
-- **Brier Score**: `0.1791`
-- **ECE (Isotonic calibrated)**: `0.0181`
-
-### Debiased Model
-- Magnitude feature’ları çıkarılmıştır
-- Bölge imzası etkisini azaltır
-- **Independent benchmark AUC**: `0.9219`
-
-### Quality-Adjusted Model
-- Debiased skor
-- Veri kalitesi cezası
-- Tektonik prior
-- Stabil bölgelerde yanlış yüksek skor üretimini bastırır
-
-### Audit Sonuçları
-- Label shuffle testi: ✅ geçti
-- Time-split testi: ✅ geçti
-- Leave-one-region-out: ✅ geçti
-- DeLong significance: ✅ 6/6 baseline p<0.05
-- Calibration: ✅ isotonic ile güçlü iyileşme
+GCMT      : 1976-2025 deprem katalogu     (69944 olay)
+ISC FDSN  : Canli bolgesel sismisitesi    (API)
+USGS FDSN : Canli yedek kaynak            (API)
+GEM       : Aktif fay segmentleri         (16195 segment)
+MIDAS     : GPS hiz veritabani            (20168 istasyon)
 
 ---
 
-## Sistem Mimarisi
+## Hizli Baslangic
 
-```text
-                    Kullanıcı / API
-                          |
-                          v
-                ┌──────────────────┐
-                │ Flask Web App    │
-                └──────────────────┘
-                          |
-                          v
-              ┌────────────────────────┐
-              │ Dual Risk Framework    │
-              └────────────────────────┘
-                  /                \
-                 /                  \
-                v                    v
-   ┌─────────────────────┐   ┌─────────────────────┐
-   │ Long-term Risk      │   │ Short-term Risk     │
-   │ - slip deficit      │   │ - debiased model    │
-   │ - coupling          │   │ - quality penalty   │
-   │ - fault geometry    │   │ - tectonic prior    │
-   │ - GPS strain        │   │ - b-value, accel    │
-   └─────────────────────┘   └─────────────────────┘
-                 \                    /
-                  \                  /
-                   v                v
-                ┌──────────────────────┐
-                │ Combined Risk +      │
-                │ Hazard Horizons      │
-                │ 30d / 90d / 1y / 5y  │
-                └──────────────────────┘
+Docker ile:
+
+    docker compose -f docker-compose.runtime.yml up
+
+Yerel Python ile:
+
+    python -m venv venv
+    venv\Scripts\activate
+    pip install -r requirements.txt
+    pip install --no-deps xgboost==3.3.0
+    python app.py
+
+Web arayuzu : http://127.0.0.1:5000
+API docs    : http://127.0.0.1:5000/docs
+
+---
+
+## API Endpoint Ornekleri
+
+    GET  /api/status          sistem durumu
+    POST /api/realtime        canli bolge analizi
+    GET  /api/dual_risk       dual risk framework
+    GET  /api/hazard_table    25 bolge hazard tablosu
+    GET  /api/hazard          horizon bazli tehlike
+    GET  /api/geodynamic      tum katmanlar birlesik
+    GET  /api/pdf             PDF rapor
+    GET  /docs                Swagger UI
+
+---
+
+## Prospective Dogrulama
+
+15 Temmuz 2026 tarihinden itibaren haftalik immutable tahmin kaydi yapilmaktadir.
+
+Her tahmin SHA-256 ile hashlenip JSON arsive yazilir.
+SQLite trigger ile degistirilemez hale getirilir.
+Hash zinciri ile onceki kayitlara baglanir.
+
+Ilk degerlendirme: Ekim 2026 (90 gun penceresi)
+
+    python scripts/prospective_tracker.py --record
+    python scripts/prospective_tracker.py --verify
+    python scripts/prospective_tracker.py --status
+
+---
+
+## Bilimsel Belgeler
+
+    docs/Limitations.md              sistem sinirlamalari
+    docs/Scientific_Methodology.md   bilimsel metodoloji
+    docs/Validation_Methodology.md   dogrulama yaklasimi
+    docs/Feature_Definitions.md      feature tanimlari
+    docs/Risk_Model.md               risk modeli
+    docs/Calibration.md              kalibrasyon
+    docs/DEPLOYMENT.md               kurulum ve calistirma
+
+---
+
+## Onemli Uyari
+
+Bu sistem arastirma ve karar destek amaclidir.
+Tahliye karari, resmi afet yonetimi veya muhendislik standardi
+belirleme icin tek basina kullanilmamalidir.
+
+Yuksek risk skoru yakin deprem garantisi degildir.
+Dusuk risk skoru guvenlik garantisi degildir.

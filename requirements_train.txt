@@ -1,0 +1,5 @@
+lightgbm==4.6.0
+catboost==1.2.10
+imbalanced-learn==0.14.2
+shap==0.52.0
+torch==2.13.0
