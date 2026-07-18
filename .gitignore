@@ -108,3 +108,6 @@ data_quality_report.txt
 parse_errors.csv
 # Docker / exported images
 *.tar
+
+# Runtime logs
+logs/
