@@ -38,6 +38,118 @@ def b_value_aki(mags, dm=0.1):
         return np.nan
     return np.log10(np.e) / denom
 
+def b_value_sliding(mags, times_days_before, window_days, min_events=15):
+    """
+    Kayan pencere b-degeri.
+    times_days_before: ana depreme kac gun kaldi (pozitif = gecmiste)
+    window_days: kac gunluk pencere
+    min_events: minimum olay sayisi
+    """
+    mags = np.array(mags, dtype=float)
+    times = np.array(times_days_before, dtype=float)
+
+    mask = (times >= 0) & (times <= window_days) & np.isfinite(mags)
+    mags_w = mags[mask]
+
+    if len(mags_w) < min_events:
+        return np.nan
+
+    return b_value_aki(mags_w)
+
+
+def b_slope_quarterly(mags, times_days_before, n_quarters=4, min_events=10):
+    """
+    Son n_quarters ceyrek icin b-degeri hesapla,
+    bunlarin uzerine lineer egim dondur.
+
+    Donen deger:
+      negatif  -> ana depreme yaklasirken b-degeri dusuyor
+      pozitif  -> ana depreme yaklasirken b-degeri artiyor
+    """
+    mags = np.array(mags, dtype=float)
+    times = np.array(times_days_before, dtype=float)
+
+    # q=0 en yakin ceyrek, q=3 en uzak ceyrek
+    b_vals_recent_to_old = []
+    for q in range(n_quarters):
+        t_start = q * 90
+        t_end = (q + 1) * 90
+        mask = (times >= t_start) & (times < t_end) & np.isfinite(mags)
+        b = b_value_aki(mags[mask]) if mask.sum() >= min_events else np.nan
+        b_vals_recent_to_old.append(b)
+
+    # Zamani gecmisten bugune cevir: eski -> yeni
+    b_vals_old_to_recent = b_vals_recent_to_old[::-1]
+    b_vals = np.array(b_vals_old_to_recent, dtype=float)
+
+    valid = np.where(np.isfinite(b_vals))[0]
+    if len(valid) < 2:
+        return np.nan
+
+    x = valid.astype(float)   # zaman: eski -> yeni
+    y = b_vals[valid]
+    return linear_slope(x, y)
+
+def shannon_entropy(counts):
+    """
+    Sayim dizisinden Shannon entropisi hesapla.
+    counts: pozitif tam sayilardan olusan dizi (ornegin aylik olay sayilari)
+    Doner: bit cinsinden entropi (log2)
+    """
+    counts = np.array(counts, dtype=float)
+    total = counts.sum()
+    if total <= 0:
+        return np.nan
+    probs = counts[counts > 0] / total
+    return -np.sum(probs * np.log2(probs))
+
+
+def temporal_entropy_monthly(event_times, ref_time, months=12):
+    """
+    Son N aydaki olaylarin aylik kutulara dagiliminin entropisi.
+
+    Yuksek entropi: olaylar zamana esit dagilmis
+    Dusuk entropi: olaylar belirli aylara kumelenmis
+    """
+    bins = np.zeros(months, dtype=float)
+    for i in range(months):
+        end = ref_time - pd.Timedelta(days=i * 30)
+        start = ref_time - pd.Timedelta(days=(i + 1) * 30)
+        bins[i] = ((event_times >= start) & (event_times < end)).sum()
+
+    if bins.sum() == 0:
+        return np.nan
+
+    return shannon_entropy(bins)
+
+
+def interevent_cv(event_times):
+    """
+    Olaylar arasi sure (inter-event time) varyasyon katsayisi.
+
+    CV = std(dt) / mean(dt)
+
+    CV > 1  : kumelenme / patlama (burstiness)
+    CV ~ 1  : rastgele Poisson
+    CV < 1  : duzenli / periyodik
+    """
+    if len(event_times) < 3:
+        return np.nan
+
+    times_sorted = np.sort(event_times)
+    dt = np.diff(times_sorted.astype(np.int64)) / 1e9 / 86400.0  # gun cinsinden
+
+    dt = dt[dt > 0]  # sifir araliklari cikar
+
+    if len(dt) < 2:
+        return np.nan
+
+    mean_dt = np.mean(dt)
+    if mean_dt <= 0:
+        return np.nan
+
+    return np.std(dt) / mean_dt
+
 def linear_slope(x, y):
     x = np.array(x, dtype=float)
     y = np.array(y, dtype=float)
@@ -215,6 +327,34 @@ def build_features(df, radii=(100, 200, 300)):
             # son 36 ay aylık sayım trendi
             mc = monthly_counts(local["datetime_utc"], main_time, months=36)
             monthly_slope_36m = linear_slope(np.arange(36), mc)
+            # --- Moving b-value feature'lari ---
+            # local penceredeki tum olaylar icin days_before zaten hesapli
+            local_mags = local["mw"].values
+            local_days = local["days_before"].values
+
+            b_value_3m = b_value_sliding(
+                local_mags, local_days,
+                window_days=90, min_events=15
+            )
+            b_value_6m = b_value_sliding(
+                local_mags, local_days,
+                window_days=180, min_events=15
+            )
+            b_slope_12m = b_slope_quarterly(
+                local_mags, local_days,
+                n_quarters=4, min_events=10
+            )
+
+            # --- Entropy feature'lari ---
+            temporal_entropy_12m = temporal_entropy_monthly(
+                local["datetime_utc"], main_time, months=12
+            )
+            monthly_entropy_36m = temporal_entropy_monthly(
+                local["datetime_utc"], main_time, months=36
+            )
+            interevent_cv_12m = interevent_cv(
+                w1["datetime_utc"].values
+            )
 
             row = {
                 "main_event_id": m.get("event_id"),
@@ -233,6 +373,12 @@ def build_features(df, radii=(100, 200, 300)):
                 "quiescence_ratio": quiescence_ratio,
                 "accel_90d": accel_90d,
                 "monthly_slope_36m": monthly_slope_36m,
+                "b_value_3m": b_value_3m,
+                "b_value_6m": b_value_6m,
+                "b_slope_12m": b_slope_12m,
+                "temporal_entropy_12m": temporal_entropy_12m,
+                "monthly_entropy_36m": monthly_entropy_36m,
+                "interevent_cv_12m": interevent_cv_12m,
                 "monthly_counts_36m_json": json.dumps(mc.tolist()),
 
                 # 1y

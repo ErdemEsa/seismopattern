@@ -13,11 +13,25 @@ from pathlib import Path
 
 ZONES_FILE = Path("data/zones_extended.json")
 
-# Genisletilmis bolge veritabani
-# Her bolge icin: konum, fay, tarihsel, segment bilgisi
-EXTENDED_ZONES = {
-    # === TURKIYE ===
-    "marmara": {
+# JSON varsa oradan yukle, yoksa asagidaki hardcoded sozlugu kullan
+def _load_zones_from_json():
+    if ZONES_FILE.exists():
+        try:
+            data = json.loads(ZONES_FILE.read_text(encoding="utf-8"))
+            if len(data) >= 25:
+                return data
+        except Exception:
+            pass
+    return None
+
+_json_zones = _load_zones_from_json()
+if _json_zones is not None:
+    EXTENDED_ZONES = _json_zones
+else:
+    # Hardcoded fallback (asagidaki orijinal sozluk)
+    EXTENDED_ZONES = {
+        # === TURKIYE ===
+        "marmara": {
         "name": "Marmara (Istanbul Segmenti)",
         "lat": 40.77, "lon": 29.00,
         "last_major": "1999-08-17", "last_major_mw": 7.6,

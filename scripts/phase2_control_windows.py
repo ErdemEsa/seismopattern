@@ -52,6 +52,39 @@ def b_value_aki(mags, dm=0.1):
         return np.nan
     return np.log10(np.e) / denom
 
+def shannon_entropy(counts):
+    counts = np.array(counts, dtype=float)
+    total = counts.sum()
+    if total <= 0:
+        return np.nan
+    probs = counts[counts > 0] / total
+    return -np.sum(probs * np.log2(probs))
+
+
+def temporal_entropy_monthly(event_times, ref_time, months=12):
+    bins = np.zeros(months, dtype=float)
+    for i in range(months):
+        end = ref_time - pd.Timedelta(days=i * 30)
+        start = ref_time - pd.Timedelta(days=(i + 1) * 30)
+        bins[i] = ((event_times >= start) & (event_times < end)).sum()
+    if bins.sum() == 0:
+        return np.nan
+    return shannon_entropy(bins)
+
+
+def interevent_cv(event_times):
+    if len(event_times) < 3:
+        return np.nan
+    times_sorted = np.sort(event_times)
+    dt = np.diff(times_sorted.astype(np.int64)) / 1e9 / 86400.0
+    dt = dt[dt > 0]
+    if len(dt) < 2:
+        return np.nan
+    mean_dt = np.mean(dt)
+    if mean_dt <= 0:
+        return np.nan
+    return np.std(dt) / mean_dt
+
 
 def linear_slope(x, y):
     x, y = np.array(x, dtype=float), np.array(y, dtype=float)
@@ -316,6 +349,15 @@ def build_control_features(df, all_majors_df, radii=(100, 200, 300),
                 mc = monthly_counts(local["datetime_utc"], ref_time, months=36)
                 monthly_slope_36m = linear_slope(np.arange(36), mc)
 
+                # --- Entropy feature'ları ---
+                temporal_entropy_12m = temporal_entropy_monthly(
+                    local["datetime_utc"], ref_time, months=12
+                )
+                monthly_entropy_36m = temporal_entropy_monthly(
+                    local["datetime_utc"], ref_time, months=36
+                )
+                interevent_cv_12m = interevent_cv(w1["datetime_utc"].values)
+
                 row = {
                     "label": "CONTROL",
                     "control_index": ci,
@@ -334,6 +376,9 @@ def build_control_features(df, all_majors_df, radii=(100, 200, 300),
                     "quiescence_ratio": quiescence_ratio,
                     "accel_90d": accel_90d,
                     "monthly_slope_36m": monthly_slope_36m,
+                    "temporal_entropy_12m": temporal_entropy_12m,
+                    "monthly_entropy_36m": monthly_entropy_36m,
+                    "interevent_cv_12m": interevent_cv_12m,
                     "monthly_counts_36m_json": json.dumps(mc.tolist()),
                 }
 

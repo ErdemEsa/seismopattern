@@ -331,6 +331,10 @@ def build_normalized_features(precursor_df, all_eq_df,
             "w3_mean_dist_km": row.get("w3_mean_dist_km"),
             "w1_migration_slope_km_day": row.get("w1_migration_slope_km_day"),
             "w3_migration_slope_km_day": row.get("w3_migration_slope_km_day"),
+            
+            "temporal_entropy_12m": row.get("temporal_entropy_12m"),
+            "monthly_entropy_36m": row.get("monthly_entropy_36m"),
+            "interevent_cv_12m": row.get("interevent_cv_12m"),
         }
 
         # Türetilmiş feature'lar
@@ -447,6 +451,9 @@ FEATURE_COLS = [
     "z_max_mw_1y",
     "z_depth_1y",
     "z_dist_1y",
+    "temporal_entropy_12m",
+    "monthly_entropy_36m",
+    "interevent_cv_12m",
 ]
 
 
