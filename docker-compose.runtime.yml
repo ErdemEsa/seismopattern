@@ -1,13 +1,13 @@
-services:
+﻿services:
   seismopattern:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: seismopattern:stable
+    pull_policy: never
     container_name: seismopattern_app
     working_dir: /app
-    command: >
-      sh -lc "python -m pip install --no-cache-dir --upgrade pip setuptools wheel &&
-              python -m pip install --no-cache-dir -r requirements.txt &&
-              python -m pip install --no-cache-dir --no-deps xgboost==3.3.0 &&
-              python app.py"
+    command: ["python", "app.py"]
     ports:
       - "5000:5000"
     volumes:
