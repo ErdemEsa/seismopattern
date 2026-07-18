@@ -106,3 +106,5 @@ output/nlp/*
 app_v1_backup.py
 data_quality_report.txt
 parse_errors.csv
+# Docker / exported images
+*.tar

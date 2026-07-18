@@ -1536,15 +1536,18 @@ def api_docs():
 # UNCERTAINTY API
 # =========================================================
 
+# UNCERTAINTY API
+# =========================================================
+
 @app.route("/api/uncertainty")
 def api_uncertainty():
     """
-    Bootstrap ile tahmin belirsizligi hesapla.
-    Hafif versiyon: 30 bootstrap model.
+    Gercek bootstrap ensemble ile tahmin belirsizligi hesapla.
     """
     try:
         lat = float(request.args.get("lat", 0))
         lon = float(request.args.get("lon", 0))
+
         if lat == 0 and lon == 0:
             return jsonify({"error": "lat ve lon gerekli"}), 400
 
@@ -1552,45 +1555,36 @@ def api_uncertainty():
         if feats is None:
             return jsonify({"error": "Veri alinamadi"}), 400
 
-        # Mevcut feature matrisini olustur
-        row = add_derived(feats)
-        fl_path = MODEL_DIR / "feature_lists.json"
-        if not fl_path.exists():
-            return jsonify({"error": "Model bulunamadi"}), 500
+        # Gercek bootstrap belirsizligi
+        try:
+            from bootstrap_uncertainty import predict_with_uncertainty
+        except Exception as e:
+            return jsonify({
+                "error": f"bootstrap_uncertainty import hatasi: {e}"
+            }), 500
 
-        with open(fl_path) as f:
-            FL_local = json.load(f)
+        result = predict_with_uncertainty(feats)
 
-        avail = FL_local.get("TIP_A", [])
-        x_row = pd.DataFrame([{f: row.get(f, np.nan) for f in avail}])
+        if "error" in result:
+            return jsonify(clean_nans(result)), 500
 
-        # 30 bootstrap tahmin
-        scores = []
-        for pt in ["TIP_A", "TIP_B", "TIP_C"]:
-            pipe_path = MODEL_DIR / f"model_{pt}.joblib"
-            if pipe_path.exists():
-                try:
-                    pipe = joblib.load(pipe_path)
-                    feats_pt = FL_local.get(pt, avail)
-                    x_pt = pd.DataFrame([{f: row.get(f, np.nan) for f in feats_pt}])
-                    s = float(pipe.predict_proba(x_pt)[0, 1])
-                    scores.append(s)
-                except Exception:
-                    pass
+        # Meta bilgi ekle
+        result["lat"] = lat
+        result["lon"] = lon
+        result["n_events"] = meta.get("n_total")
 
-        if not scores:
-            return jsonify({"error": "Skor hesaplanamadi"}), 500
+        raw_source = meta.get("source")
+        cache_flag = bool(meta.get("cache", False))
 
-        mean_s = np.mean(scores)
-        std_s = np.std(scores) if len(scores) > 1 else 0
+        # Tutarlilik: source="cache" ise cache de True olmali
+        if isinstance(raw_source, str) and raw_source.strip().lower() == "cache":
+            cache_flag = True
 
-        return jsonify(clean_nans({
-            "mean": round(float(mean_s), 4),
-            "std": round(float(std_s), 4),
-            "ci_lower": round(float(max(0, mean_s - 1.96 * std_s)), 4),
-            "ci_upper": round(float(min(1, mean_s + 1.96 * std_s)), 4),
-            "n_models": len(scores),
-        }))
+        result["source"] = raw_source
+        result["cache"] = cache_flag
+
+        return jsonify(clean_nans(result))
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -1829,4 +1823,4 @@ if __name__ == "__main__":
     print(f"Modeller : {list(MODELS.keys())}")
     print("http://127.0.0.1:5000")
     print("=" * 50)
-    app.run(debug=False, port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=False)
