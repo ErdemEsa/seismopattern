@@ -24,7 +24,7 @@ warnings.filterwarnings("ignore")
 
 from scipy import stats
 from sklearn.preprocessing import RobustScaler
-from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.model_selection import StratifiedKFold, cross_validate, cross_val_score
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
@@ -288,7 +288,7 @@ def build_normalized_features(precursor_df, all_eq_df,
     rows = []
     n_total = len(df)
 
-    for i, row in df.iterrows():
+    for idx_count, (i, row) in enumerate(df.iterrows()):
         main_time = pd.to_datetime(row[time_col])
         lat0 = row[lat_col]
         lon0 = row[lon_col]
@@ -337,7 +337,6 @@ def build_normalized_features(precursor_df, all_eq_df,
             "interevent_cv_12m": row.get("interevent_cv_12m"),
             "fractal_dim_12m": row.get("fractal_dim_12m"),
             "fractal_dim_36m": row.get("fractal_dim_36m"),
-            "fractal_dim_change": row.get("fractal_dim_change"),
         }
 
         # Türetilmiş feature'lar
@@ -401,8 +400,8 @@ def build_normalized_features(precursor_df, all_eq_df,
         combined_row.update(baseline_info)
         rows.append(combined_row)
 
-        if (i + 1) % 100 == 0:
-            pct = (i + 1) / n_total * 100
+        if (idx_count + 1) % 200 == 0:
+            pct = (idx_count + 1) / n_total * 100
             print(f"  {i+1}/{n_total} ({pct:.0f}%) işlendi...")
 
     result_df = pd.DataFrame(rows)
@@ -585,8 +584,13 @@ def train_and_evaluate(real_norm, ctrl_norm):
 
     try:
         imp = best_pipe.named_steps["mdl"].feature_importances_
+        # Imputer/scaler sonrasi feature sayisi degisebilir
+        if len(imp) == len(common):
+            feat_names = common
+        else:
+            feat_names = [f"f_{j}" for j in range(len(imp))]
         imp_df = pd.DataFrame({
-            "feature": common,
+            "feature": feat_names,
             "importance": imp
         }).sort_values("importance", ascending=False)
 
