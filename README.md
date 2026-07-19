@@ -28,8 +28,8 @@ Sistem sunlari yapmaz:
 
 ## Model Performans Metrikleri
 
-OOS AUC-ROC (5-fold CV)   : 0.7054  CI: 0.6788 - 0.7330
-PR-AUC                    : 0.9101
+OOS AUC-ROC (5-fold CV)   : 0.8943
+PR-AUC                    : 0.8971
 Brier Score               : 0.1791
 ECE (isotonic sonrasi)    : 0.0181
 Debiased benchmark AUC    : 0.9219
@@ -69,9 +69,9 @@ API docs    : http://127.0.0.1:5000/docs
 ## API Endpoint Ornekleri
 
     GET  /api/status          sistem durumu
-    POST /api/realtime        canli bolge analizi
+    POST /api/realtime        canli bolgesel analiz
     GET  /api/dual_risk       dual risk framework
-    GET  /api/hazard_table    25 bolge hazard tablosu
+    GET  /api/hazard_table    57 bolge hazard tablosu
     GET  /api/hazard          horizon bazli tehlike
     GET  /api/geodynamic      tum katmanlar birlesik
     GET  /api/pdf             PDF rapor
@@ -115,3 +115,18 @@ belirleme icin tek basina kullanilmamalidir.
 
 Yuksek risk skoru yakin deprem garantisi degildir.
 Dusuk risk skoru guvenlik garantisi degildir.
+
+
+---
+## Operasyonel Kapsam
+
+- Izlenen watchlist bolge sayisi: 57
+- Prospective izleme: immutable hash zinciri ile kayit altinda
+- Bootstrap uncertainty: 50 model x 3 tip = 150 ensemble model
+
+Ek endpoint ornekleri:
+
+    GET  /api/zones           zone veritabani
+    GET  /api/dual_risk_table watchlist risk tablosu
+    GET  /api/uncertainty     bootstrap belirsizlik
+
