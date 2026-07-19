@@ -189,3 +189,21 @@ dual risk sisteminin ek katmanlarıdır:
 - tectonic penalty
 
 Bunlar operasyonel risk üretiminde kullanılır.
+
+
+### fractal_dim_36m
+**Tip:** Mek?nsal karma??kl?k  
+**Pencere:** 36 ay  
+**Kaynak:** phase2_gcmt_features.py + fractal_features.py
+
+Son 36 aydaki sismik olaylar?n mek?nsal da??l?m?n?n fraktal boyutu
+(box-counting y?ntemi).
+
+- Y?ksek de?er: olaylar geni? alana yay?lm??
+- D???k de?er: olaylar belirli noktalarda k?melenmi?
+- NaN: 36 ayda 8'den az olay
+
+**Model durumu:** Ana model (phase9), 34. feature  
+**Mann-Whitney p:** 0.00356  
+**NaN oran?:** REAL=0.52, CTRL=0.57
+

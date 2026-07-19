@@ -25,6 +25,7 @@ import numpy as np
 import pandas as pd
 from datetime import timedelta
 
+from fractal_features import fractal_dimension_boxcount_df
 EARTH_RADIUS_KM = 6371.0
 
 
@@ -357,6 +358,13 @@ def build_control_features(df, all_majors_df, radii=(100, 200, 300),
                     local["datetime_utc"], ref_time, months=36
                 )
                 interevent_cv_12m = interevent_cv(w1["datetime_utc"].values)
+                fractal_dim_12m = fractal_dimension_boxcount_df(w1)
+                fractal_dim_36m = fractal_dimension_boxcount_df(w3)
+                fractal_dim_change = (
+                    fractal_dim_12m - fractal_dim_36m
+                    if pd.notna(fractal_dim_12m) and pd.notna(fractal_dim_36m)
+                    else np.nan
+                )
 
                 row = {
                     "label": "CONTROL",
@@ -379,6 +387,9 @@ def build_control_features(df, all_majors_df, radii=(100, 200, 300),
                     "temporal_entropy_12m": temporal_entropy_12m,
                     "monthly_entropy_36m": monthly_entropy_36m,
                     "interevent_cv_12m": interevent_cv_12m,
+                    "fractal_dim_12m": fractal_dim_12m,
+                    "fractal_dim_36m": fractal_dim_36m,
+                    "fractal_dim_change": fractal_dim_change,
                     "monthly_counts_36m_json": json.dumps(mc.tolist()),
                 }
 

@@ -335,6 +335,9 @@ def build_normalized_features(precursor_df, all_eq_df,
             "temporal_entropy_12m": row.get("temporal_entropy_12m"),
             "monthly_entropy_36m": row.get("monthly_entropy_36m"),
             "interevent_cv_12m": row.get("interevent_cv_12m"),
+            "fractal_dim_12m": row.get("fractal_dim_12m"),
+            "fractal_dim_36m": row.get("fractal_dim_36m"),
+            "fractal_dim_change": row.get("fractal_dim_change"),
         }
 
         # Türetilmiş feature'lar
@@ -454,6 +457,8 @@ FEATURE_COLS = [
     "temporal_entropy_12m",
     "monthly_entropy_36m",
     "interevent_cv_12m",
+    "fractal_dim_12m",
+    "fractal_dim_36m",
 ]
 
 

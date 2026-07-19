@@ -217,3 +217,49 @@ SeismoPattern:
 - fizik + veri hibrit risk izleme sistemidir
 - olasılıksal segment izleme yaklaşımıdır
 - prospective doğrulama ile değerlendirilecek araştırma yazılımıdır
+
+
+## Fraktal Boyut Feature'? (fractal_dim_36m)
+
+### Motivasyon
+B?y?k depremler ?ncesinde episentral b?lgedeki sismisitede
+mek?nsal k?melenme de?i?imi beklenebilir. Fraktal boyut
+(box-counting y?ntemi) bu mek?nsal da??l?m? ?l?er.
+
+### Hesaplama
+- Son 36 ayl?k penceredeki olaylar?n lat/lon konumlar? al?n?r
+- 2?2, 4?4, 8?8, 16?16 kutu gridleri uygulan?r
+- log(N_kutular) vs log(kutu_boyutu) e?imi fraktal boyutu verir
+- De?er aral???: [0, 2] (0=tek nokta, 2=tamamen d?zlemsel da??l?m)
+
+### Veri gereksinimleri
+- Minimum 8 olay (200 km, 36 ay)
+- Koordinat kolonlar?: eff_lat/eff_lon ?ncelikli
+
+### Sonu?lar
+
+| Metrik | De?er |
+|---|---|
+| REAL NaN oran? | 0.52 |
+| CTRL NaN oran? | 0.57 |
+| REAL medyan? | 0.638 |
+| CTRL medyan? | 0.598 |
+| Mann-Whitney p | 0.00356 |
+| Model etkisi (PR-AUC) | +0.0013 |
+| Model etkisi (F1@0.30) | +0.0081 |
+
+### Yorum
+Real pencereler (b?y?k deprem ?ncesi) hafif daha y?ksek fraktal
+boyut g?steriyor. Bu, sismisitenin control'e k?yasla daha geni?
+alana yay?ld???na i?aret edebilir ? veya sismik k?mele?menin
+belirli bir d?zeni bozdu?una.
+
+Sinyal istatistiksel olarak anlaml? (p<0.05) ancak etki b?y?kl???
+orta d?zeyde. Bu nedenle model i?inde tamamlay?c? bir feature
+olarak tutulmaktad?r.
+
+### K?s?tlamalar
+- NaN oran? y?ksek (%52-57): seyrek katalogda s?n?rl? kullan?m
+- Sadece 36m penceresi yeterli veri sa?l?yor (12m ?ok sparse)
+- GCMT sparse katalog i?in optimize edilmemi? box boyutlar?
+

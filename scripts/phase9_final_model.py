@@ -114,6 +114,7 @@ FEATURES = [
     "temporal_entropy_12m",
     "monthly_entropy_36m",
     "interevent_cv_12m",
+    "fractal_dim_36m",
 ]
 
 
