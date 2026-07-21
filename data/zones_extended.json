@@ -1473,5 +1473,19 @@
     "last_major_year": 1911,
     "recurrence_yr": 100,
     "notes": "Philippine Sea plate subduction beneath Eurasian plate. Okinawa Trough back-arc."
+  },
+  "halmahera_molucca": {
+    "name": "Halmahera - Molucca Sea",
+    "lat": 1.9,
+    "lon": 127.5,
+    "radius_km": 250,
+    "min_mw": 2.5,
+    "tectonic_type": "subduction",
+    "slip_rate_mm_yr": 40.0,
+    "coupling": 0.5,
+    "last_major_mw": 7.2,
+    "last_major_year": 2019,
+    "recurrence_yr": 40,
+    "notes": "Halmahera arc and Molucca Sea collision/subduction system. Active North Maluku region."
   }
 }

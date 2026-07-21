@@ -71,7 +71,7 @@ API docs    : http://127.0.0.1:5000/docs
     GET  /api/status          sistem durumu
     POST /api/realtime        canli bolgesel analiz
     GET  /api/dual_risk       dual risk framework
-    GET  /api/hazard_table    57 bolge hazard tablosu
+    GET  /api/hazard_table    watchlist hazard tablosu
     GET  /api/hazard          horizon bazli tehlike
     GET  /api/geodynamic      tum katmanlar birlesik
     GET  /api/pdf             PDF rapor
@@ -120,7 +120,7 @@ Dusuk risk skoru guvenlik garantisi degildir.
 ---
 ## Operasyonel Kapsam
 
-- Izlenen watchlist bolge sayisi: 57
+- Izlenen watchlist bolge sayisi: 50+ (current: 58)
 - Prospective izleme: immutable hash zinciri ile kayit altinda
 - Bootstrap uncertainty: 50 model x 3 tip = 150 ensemble model
 
