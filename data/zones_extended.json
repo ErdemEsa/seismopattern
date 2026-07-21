@@ -1487,5 +1487,19 @@
     "last_major_year": 2019,
     "recurrence_yr": 40,
     "notes": "Halmahera arc and Molucca Sea collision/subduction system. Active North Maluku region."
+  },
+  "mexico_west_jalisco": {
+    "name": "West Mexico (Rivera-Jalisco)",
+    "lat": 24.0,
+    "lon": -108.0,
+    "radius_km": 300,
+    "min_mw": 2.5,
+    "tectonic_type": "subduction",
+    "slip_rate_mm_yr": 50.0,
+    "coupling": 0.6,
+    "last_major_mw": 8.0,
+    "last_major_year": 1995,
+    "recurrence_yr": 60,
+    "notes": "Rivera plate subduction beneath North American plate. Jalisco-Colima-Sinaloa coast."
   }
 }
