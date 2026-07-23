@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Deployment: allow flutter web build output for Render static site
+!/build/
+!/build/web/
+!/build/web/**
