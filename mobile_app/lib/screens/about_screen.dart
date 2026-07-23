@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../config.dart';
+import 'settings_screen.dart';
+
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
@@ -7,8 +10,22 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: const [
+      children: [
         Card(
+          child: ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Ayarlar'),
+            subtitle: Text('Backend URL: ${AppConfig.baseUrl}'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Card(
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Text(
@@ -19,8 +36,8 @@ class AboutScreen extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 12),
-        Card(
+        const SizedBox(height: 12),
+        const Card(
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Text(
@@ -31,8 +48,8 @@ class AboutScreen extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 12),
-        Card(
+        const SizedBox(height: 12),
+        const Card(
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Text(
