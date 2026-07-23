@@ -25,10 +25,10 @@ class HomeScreen extends StatelessWidget {
               children: const [
                 CircularProgressIndicator(),
                 SizedBox(height: 12),
-                Text('Backend uyaniyor...'),
+                Text('Backend uyanıyor...'),
                 SizedBox(height: 4),
                 Text(
-                  'Ilk yukleme 30 saniye kadar surebilir',
+                  'İlk yükleme 30 saniye kadar sürebilir',
                   style: TextStyle(color: Colors.black54, fontSize: 12),
                 ),
               ],
@@ -109,7 +109,7 @@ class _HeroBanner extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'v$version - Kalibre olasiliksal risk izleme',
+                        'v$version - Kalibre olasılıksal risk izleme',
                         style: const TextStyle(
                           color: Colors.black54,
                           fontSize: 12,
@@ -221,7 +221,7 @@ class _StatCards extends StatelessWidget {
         Expanded(
           child: _statCard(
             icon: Icons.public,
-            label: 'Izlenen Zone',
+            label: 'İzlenen Zone',
             value: zoneCount.toString(),
             color: Colors.blue,
           ),
@@ -304,7 +304,7 @@ class _CriticalZones extends StatelessWidget {
                 Icon(Icons.local_fire_department, color: Colors.red),
                 SizedBox(width: 6),
                 Text(
-                  'En yuksek riskli 5 bolge',
+                  'En yüksek riskli 5 bölge',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -394,9 +394,9 @@ class _DisclaimerCard extends StatelessWidget {
             SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Bu uygulama deterministik deprem tahmini veya erken uyari '
-                'sistemi degildir. Skorlar arastirma amacli olasiliksal '
-                'risk gostergeleridir.',
+                'Bu uygulama deterministik deprem tahmini veya erken uyarı '
+                'sistemi değildir. Skorlar araştırma amaçlı olasılıksal '
+                'risk göstergeleridir.',
                 style: TextStyle(fontSize: 12),
               ),
             ),
