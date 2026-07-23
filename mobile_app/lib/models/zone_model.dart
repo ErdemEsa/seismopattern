@@ -45,13 +45,22 @@ class ZoneModel {
   /// Risk seviyesi metni (KRITIK / YUKSEK / ORTA / DIKKAT / DUSUK / -)
   String get riskLevelDisplay {
     if (riskLevel.isNotEmpty) return riskLevel;
-    if (riskScore == null) return '-';
-    final s = riskScore!;
+    final s = riskScore ?? _derivedRiskScore();
     if (s >= 0.75) return 'KRITIK';
     if (s >= 0.50) return 'YUKSEK';
     if (s >= 0.30) return 'ORTA';
     if (s >= 0.15) return 'DIKKAT';
     return 'DUSUK';
+  }
+
+  /// Backend segment_risk_score vermediyse (yeni subduction zone'lari),
+  /// coupling ve slip deficit'ten yaklasik bir risk skoru turet.
+  double _derivedRiskScore() {
+    final c = couplingRatio ?? 0.5;
+    final s = slipDeficitM ?? 1.0;
+    // Coupling agirlikli, slip deficit destekli
+    final derived = (c * 0.5) + ((s / 10.0).clamp(0.0, 0.5));
+    return derived.clamp(0.0, 1.0);
   }
 
   /// Risk seviyesine gÃ¶re kart rengi
