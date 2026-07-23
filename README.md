@@ -1,8 +1,23 @@
 # SeismoPattern
 
+[![Backend](https://img.shields.io/badge/Backend-Live-brightgreen)](https://seismopattern.onrender.com/api/status)
+[![Model AUC](https://img.shields.io/badge/AUC-0.8943-blue)]()
+[![Zone Coverage](https://img.shields.io/badge/Zones-59-orange)]()
+[![Tests](https://img.shields.io/badge/Tests-12%2F12-brightgreen)]()
+
 Kalibrated, cok katmanli, segment olcekli, olasiliksal deprem risk izleme sistemi.
 
 **Deterministik deprem zaman tahmini degildir.**
+
+## Canli Demo
+
+- Backend API : https://seismopattern.onrender.com
+- Status      : https://seismopattern.onrender.com/api/status
+- Zones       : https://seismopattern.onrender.com/api/zones
+- Mobil       : Flutter (Android APK + web build hazir)
+
+> Not: Backend Render Free Tier uzerinde calisir. 15 dakika inaktivite
+> sonrasi uykuya gecer, ilk istek 30-60 saniye surebilir. Sonrasi hizlidir.
 
 ---
 
@@ -130,3 +145,58 @@ Ek endpoint ornekleri:
     GET  /api/dual_risk_table watchlist risk tablosu
     GET  /api/uncertainty     bootstrap belirsizlik
 
+---
+
+## Mobil Uygulama
+
+Flutter tabanli mobil arayuz, backend API ile canli calisir.
+
+### Ozellikler
+
+- 5 sekme: Ana Sayfa (dashboard) / Zones / Harita / Analiz / Hakkinda
+- 59 bolgelik dunya haritasi, risk seviyesine gore renkli marker'lar
+- Zone detay: uncertainty (bootstrap), fay, coupling, slip deficit
+- Manuel koordinat analizi (istediginiz lat/lon icin)
+- Renkli risk seviyesi kartlari (KRITIK / YUKSEK / ORTA / DIKKAT / DUSUK)
+- Ayarlar ekrani: backend URL degistirilebilir
+
+### Calistirmak
+
+Web (herhangi bir tarayici):
+
+    cd mobile_app
+    flutter run -d web-server --web-port 8080
+
+Android emulator:
+
+    cd mobile_app
+    flutter run
+
+Android APK build:
+
+    cd mobile_app
+    flutter build apk --release
+
+Uretilen APK: mobile_app/build/app/outputs/flutter-apk/app-release.apk
+
+### Ekran Goruntuleri
+
+Ekran goruntuleri icin bakiniz: mobile_app/docs/screenshots/
+
+---
+
+## Deployment
+
+### Backend (Render.com Free Tier)
+
+- Docker image olarak deploy edilir
+- Otomatik SSL (Let's Encrypt)
+- GitHub push -> otomatik build
+- Health check: /healthz
+- CORS acik (mobil app icin)
+
+### Frontend (Flutter web)
+
+- Static site olarak Render'a deploy edilebilir
+- Ya da bagimsiz her yerde host edilebilir
+- Backend URL runtime'da degistirilebilir (Ayarlar ekrani)
