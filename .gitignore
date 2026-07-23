@@ -111,3 +111,12 @@ parse_errors.csv
 
 # Runtime logs
 logs/
+
+# ============================================================
+# Deployment: allow critical model artifacts
+# ============================================================
+!output/models/*.joblib
+!output/calibrated_models/*.joblib
+!output/counterfactual/*.joblib
+!output/uncertainty_models/
+!output/uncertainty_models/*

@@ -1,0 +1,1322 @@
+{
+  "n_bootstrap": 50,
+  "random_seed": 42,
+  "tip_feats": {
+    "TIP_A": [
+      "accel_90d",
+      "count_0_1y",
+      "count_1_2y",
+      "count_2_3y",
+      "count_accel_ratio",
+      "count_linear_trend",
+      "depth_change_km",
+      "fractal_dim_36m",
+      "interevent_cv_12m",
+      "monthly_entropy_36m",
+      "monthly_slope_36m",
+      "quiescence_ratio",
+      "spatial_focus_change",
+      "temporal_entropy_12m",
+      "w1_mean_depth_km",
+      "w1_mean_dist_km",
+      "w1_mean_mw",
+      "w1_migration_slope_km_day",
+      "w1_n_events",
+      "w1_std_depth_km",
+      "w1_std_dist_km",
+      "w1_std_mw",
+      "w3_b_value",
+      "w3_mean_depth_km",
+      "w3_mean_dist_km",
+      "w3_mean_mw",
+      "w3_migration_slope_km_day",
+      "w3_n_events",
+      "z_b_value_3y",
+      "z_depth_1y",
+      "z_dist_1y",
+      "z_max_mw_1y",
+      "z_rate_1y",
+      "z_rate_3y"
+    ],
+    "TIP_B": [
+      "accel_90d",
+      "count_0_1y",
+      "count_1_2y",
+      "count_2_3y",
+      "count_accel_ratio",
+      "count_linear_trend",
+      "depth_change_km",
+      "fractal_dim_36m",
+      "interevent_cv_12m",
+      "monthly_entropy_36m",
+      "monthly_slope_36m",
+      "quiescence_ratio",
+      "spatial_focus_change",
+      "temporal_entropy_12m",
+      "w1_mean_depth_km",
+      "w1_mean_dist_km",
+      "w1_mean_mw",
+      "w1_migration_slope_km_day",
+      "w1_n_events",
+      "w1_std_depth_km",
+      "w1_std_dist_km",
+      "w1_std_mw",
+      "w3_b_value",
+      "w3_mean_depth_km",
+      "w3_mean_dist_km",
+      "w3_mean_mw",
+      "w3_migration_slope_km_day",
+      "w3_n_events",
+      "z_b_value_3y",
+      "z_depth_1y",
+      "z_dist_1y",
+      "z_max_mw_1y",
+      "z_rate_1y",
+      "z_rate_3y"
+    ],
+    "TIP_C": [
+      "accel_90d",
+      "count_0_1y",
+      "count_1_2y",
+      "count_2_3y",
+      "count_accel_ratio",
+      "count_linear_trend",
+      "depth_change_km",
+      "fractal_dim_36m",
+      "interevent_cv_12m",
+      "monthly_entropy_36m",
+      "monthly_slope_36m",
+      "quiescence_ratio",
+      "spatial_focus_change",
+      "temporal_entropy_12m",
+      "w1_mean_depth_km",
+      "w1_mean_dist_km",
+      "w1_mean_mw",
+      "w1_migration_slope_km_day",
+      "w1_n_events",
+      "w1_std_depth_km",
+      "w1_std_dist_km",
+      "w1_std_mw",
+      "w3_b_value",
+      "w3_mean_depth_km",
+      "w3_mean_dist_km",
+      "w3_mean_mw",
+      "w3_migration_slope_km_day",
+      "w3_n_events",
+      "z_b_value_3y",
+      "z_depth_1y",
+      "z_dist_1y",
+      "z_max_mw_1y",
+      "z_rate_1y",
+      "z_rate_3y"
+    ]
+  },
+  "models": {
+    "TIP_A": [
+      {
+        "index": 0,
+        "seed": 1608637542,
+        "file": "bootstrap_TIP_A_000.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 1,
+        "seed": 1273642419,
+        "file": "bootstrap_TIP_A_001.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 2,
+        "seed": 1935803228,
+        "file": "bootstrap_TIP_A_002.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 3,
+        "seed": 787846414,
+        "file": "bootstrap_TIP_A_003.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 4,
+        "seed": 996406378,
+        "file": "bootstrap_TIP_A_004.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 5,
+        "seed": 1201263687,
+        "file": "bootstrap_TIP_A_005.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 6,
+        "seed": 423734972,
+        "file": "bootstrap_TIP_A_006.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 7,
+        "seed": 415968276,
+        "file": "bootstrap_TIP_A_007.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 8,
+        "seed": 670094950,
+        "file": "bootstrap_TIP_A_008.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 9,
+        "seed": 1914837113,
+        "file": "bootstrap_TIP_A_009.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 10,
+        "seed": 669991378,
+        "file": "bootstrap_TIP_A_010.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 11,
+        "seed": 429389014,
+        "file": "bootstrap_TIP_A_011.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 12,
+        "seed": 249467210,
+        "file": "bootstrap_TIP_A_012.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 13,
+        "seed": 1972458954,
+        "file": "bootstrap_TIP_A_013.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 14,
+        "seed": 1572714583,
+        "file": "bootstrap_TIP_A_014.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 15,
+        "seed": 1433267572,
+        "file": "bootstrap_TIP_A_015.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 16,
+        "seed": 434285667,
+        "file": "bootstrap_TIP_A_016.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 17,
+        "seed": 613608295,
+        "file": "bootstrap_TIP_A_017.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 18,
+        "seed": 893664919,
+        "file": "bootstrap_TIP_A_018.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 19,
+        "seed": 648061058,
+        "file": "bootstrap_TIP_A_019.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 20,
+        "seed": 88409749,
+        "file": "bootstrap_TIP_A_020.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 21,
+        "seed": 242285876,
+        "file": "bootstrap_TIP_A_021.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 22,
+        "seed": 2018247425,
+        "file": "bootstrap_TIP_A_022.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 23,
+        "seed": 953477463,
+        "file": "bootstrap_TIP_A_023.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 24,
+        "seed": 1427830251,
+        "file": "bootstrap_TIP_A_024.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 25,
+        "seed": 1883569565,
+        "file": "bootstrap_TIP_A_025.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 26,
+        "seed": 911989541,
+        "file": "bootstrap_TIP_A_026.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 27,
+        "seed": 3344769,
+        "file": "bootstrap_TIP_A_027.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 28,
+        "seed": 780932287,
+        "file": "bootstrap_TIP_A_028.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 29,
+        "seed": 2114032571,
+        "file": "bootstrap_TIP_A_029.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 30,
+        "seed": 787716372,
+        "file": "bootstrap_TIP_A_030.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 31,
+        "seed": 504579232,
+        "file": "bootstrap_TIP_A_031.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 32,
+        "seed": 1306710475,
+        "file": "bootstrap_TIP_A_032.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 33,
+        "seed": 479546681,
+        "file": "bootstrap_TIP_A_033.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 34,
+        "seed": 106328085,
+        "file": "bootstrap_TIP_A_034.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 35,
+        "seed": 30349564,
+        "file": "bootstrap_TIP_A_035.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 36,
+        "seed": 1855189739,
+        "file": "bootstrap_TIP_A_036.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 37,
+        "seed": 99052376,
+        "file": "bootstrap_TIP_A_037.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 38,
+        "seed": 1250819632,
+        "file": "bootstrap_TIP_A_038.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 39,
+        "seed": 106406362,
+        "file": "bootstrap_TIP_A_039.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 40,
+        "seed": 480404538,
+        "file": "bootstrap_TIP_A_040.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 41,
+        "seed": 1717389822,
+        "file": "bootstrap_TIP_A_041.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 42,
+        "seed": 599121577,
+        "file": "bootstrap_TIP_A_042.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 43,
+        "seed": 200427519,
+        "file": "bootstrap_TIP_A_043.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 44,
+        "seed": 1254751707,
+        "file": "bootstrap_TIP_A_044.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 45,
+        "seed": 2034764475,
+        "file": "bootstrap_TIP_A_045.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 46,
+        "seed": 1573512143,
+        "file": "bootstrap_TIP_A_046.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 47,
+        "seed": 999745294,
+        "file": "bootstrap_TIP_A_047.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 48,
+        "seed": 1958805693,
+        "file": "bootstrap_TIP_A_048.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      },
+      {
+        "index": 49,
+        "seed": 389151677,
+        "file": "bootstrap_TIP_A_049.joblib",
+        "n_real": 293,
+        "n_ctrl": 879,
+        "n_feats": 34
+      }
+    ],
+    "TIP_B": [
+      {
+        "index": 0,
+        "seed": 1608637542,
+        "file": "bootstrap_TIP_B_000.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 1,
+        "seed": 1273642419,
+        "file": "bootstrap_TIP_B_001.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 2,
+        "seed": 1935803228,
+        "file": "bootstrap_TIP_B_002.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 3,
+        "seed": 787846414,
+        "file": "bootstrap_TIP_B_003.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 4,
+        "seed": 996406378,
+        "file": "bootstrap_TIP_B_004.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 5,
+        "seed": 1201263687,
+        "file": "bootstrap_TIP_B_005.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 6,
+        "seed": 423734972,
+        "file": "bootstrap_TIP_B_006.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 7,
+        "seed": 415968276,
+        "file": "bootstrap_TIP_B_007.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 8,
+        "seed": 670094950,
+        "file": "bootstrap_TIP_B_008.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 9,
+        "seed": 1914837113,
+        "file": "bootstrap_TIP_B_009.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 10,
+        "seed": 669991378,
+        "file": "bootstrap_TIP_B_010.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 11,
+        "seed": 429389014,
+        "file": "bootstrap_TIP_B_011.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 12,
+        "seed": 249467210,
+        "file": "bootstrap_TIP_B_012.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 13,
+        "seed": 1972458954,
+        "file": "bootstrap_TIP_B_013.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 14,
+        "seed": 1572714583,
+        "file": "bootstrap_TIP_B_014.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 15,
+        "seed": 1433267572,
+        "file": "bootstrap_TIP_B_015.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 16,
+        "seed": 434285667,
+        "file": "bootstrap_TIP_B_016.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 17,
+        "seed": 613608295,
+        "file": "bootstrap_TIP_B_017.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 18,
+        "seed": 893664919,
+        "file": "bootstrap_TIP_B_018.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 19,
+        "seed": 648061058,
+        "file": "bootstrap_TIP_B_019.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 20,
+        "seed": 88409749,
+        "file": "bootstrap_TIP_B_020.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 21,
+        "seed": 242285876,
+        "file": "bootstrap_TIP_B_021.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 22,
+        "seed": 2018247425,
+        "file": "bootstrap_TIP_B_022.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 23,
+        "seed": 953477463,
+        "file": "bootstrap_TIP_B_023.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 24,
+        "seed": 1427830251,
+        "file": "bootstrap_TIP_B_024.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 25,
+        "seed": 1883569565,
+        "file": "bootstrap_TIP_B_025.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 26,
+        "seed": 911989541,
+        "file": "bootstrap_TIP_B_026.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 27,
+        "seed": 3344769,
+        "file": "bootstrap_TIP_B_027.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 28,
+        "seed": 780932287,
+        "file": "bootstrap_TIP_B_028.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 29,
+        "seed": 2114032571,
+        "file": "bootstrap_TIP_B_029.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 30,
+        "seed": 787716372,
+        "file": "bootstrap_TIP_B_030.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 31,
+        "seed": 504579232,
+        "file": "bootstrap_TIP_B_031.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 32,
+        "seed": 1306710475,
+        "file": "bootstrap_TIP_B_032.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 33,
+        "seed": 479546681,
+        "file": "bootstrap_TIP_B_033.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 34,
+        "seed": 106328085,
+        "file": "bootstrap_TIP_B_034.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 35,
+        "seed": 30349564,
+        "file": "bootstrap_TIP_B_035.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 36,
+        "seed": 1855189739,
+        "file": "bootstrap_TIP_B_036.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 37,
+        "seed": 99052376,
+        "file": "bootstrap_TIP_B_037.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 38,
+        "seed": 1250819632,
+        "file": "bootstrap_TIP_B_038.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 39,
+        "seed": 106406362,
+        "file": "bootstrap_TIP_B_039.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 40,
+        "seed": 480404538,
+        "file": "bootstrap_TIP_B_040.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 41,
+        "seed": 1717389822,
+        "file": "bootstrap_TIP_B_041.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 42,
+        "seed": 599121577,
+        "file": "bootstrap_TIP_B_042.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 43,
+        "seed": 200427519,
+        "file": "bootstrap_TIP_B_043.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 44,
+        "seed": 1254751707,
+        "file": "bootstrap_TIP_B_044.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 45,
+        "seed": 2034764475,
+        "file": "bootstrap_TIP_B_045.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 46,
+        "seed": 1573512143,
+        "file": "bootstrap_TIP_B_046.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 47,
+        "seed": 999745294,
+        "file": "bootstrap_TIP_B_047.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 48,
+        "seed": 1958805693,
+        "file": "bootstrap_TIP_B_048.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      },
+      {
+        "index": 49,
+        "seed": 389151677,
+        "file": "bootstrap_TIP_B_049.joblib",
+        "n_real": 103,
+        "n_ctrl": 309,
+        "n_feats": 34
+      }
+    ],
+    "TIP_C": [
+      {
+        "index": 0,
+        "seed": 1608637542,
+        "file": "bootstrap_TIP_C_000.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 1,
+        "seed": 1273642419,
+        "file": "bootstrap_TIP_C_001.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 2,
+        "seed": 1935803228,
+        "file": "bootstrap_TIP_C_002.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 3,
+        "seed": 787846414,
+        "file": "bootstrap_TIP_C_003.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 4,
+        "seed": 996406378,
+        "file": "bootstrap_TIP_C_004.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 5,
+        "seed": 1201263687,
+        "file": "bootstrap_TIP_C_005.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 6,
+        "seed": 423734972,
+        "file": "bootstrap_TIP_C_006.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 7,
+        "seed": 415968276,
+        "file": "bootstrap_TIP_C_007.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 8,
+        "seed": 670094950,
+        "file": "bootstrap_TIP_C_008.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 9,
+        "seed": 1914837113,
+        "file": "bootstrap_TIP_C_009.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 10,
+        "seed": 669991378,
+        "file": "bootstrap_TIP_C_010.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 11,
+        "seed": 429389014,
+        "file": "bootstrap_TIP_C_011.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 12,
+        "seed": 249467210,
+        "file": "bootstrap_TIP_C_012.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 13,
+        "seed": 1972458954,
+        "file": "bootstrap_TIP_C_013.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 14,
+        "seed": 1572714583,
+        "file": "bootstrap_TIP_C_014.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 15,
+        "seed": 1433267572,
+        "file": "bootstrap_TIP_C_015.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 16,
+        "seed": 434285667,
+        "file": "bootstrap_TIP_C_016.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 17,
+        "seed": 613608295,
+        "file": "bootstrap_TIP_C_017.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 18,
+        "seed": 893664919,
+        "file": "bootstrap_TIP_C_018.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 19,
+        "seed": 648061058,
+        "file": "bootstrap_TIP_C_019.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 20,
+        "seed": 88409749,
+        "file": "bootstrap_TIP_C_020.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 21,
+        "seed": 242285876,
+        "file": "bootstrap_TIP_C_021.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 22,
+        "seed": 2018247425,
+        "file": "bootstrap_TIP_C_022.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 23,
+        "seed": 953477463,
+        "file": "bootstrap_TIP_C_023.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 24,
+        "seed": 1427830251,
+        "file": "bootstrap_TIP_C_024.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 25,
+        "seed": 1883569565,
+        "file": "bootstrap_TIP_C_025.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 26,
+        "seed": 911989541,
+        "file": "bootstrap_TIP_C_026.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 27,
+        "seed": 3344769,
+        "file": "bootstrap_TIP_C_027.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 28,
+        "seed": 780932287,
+        "file": "bootstrap_TIP_C_028.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 29,
+        "seed": 2114032571,
+        "file": "bootstrap_TIP_C_029.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 30,
+        "seed": 787716372,
+        "file": "bootstrap_TIP_C_030.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 31,
+        "seed": 504579232,
+        "file": "bootstrap_TIP_C_031.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 32,
+        "seed": 1306710475,
+        "file": "bootstrap_TIP_C_032.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 33,
+        "seed": 479546681,
+        "file": "bootstrap_TIP_C_033.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 34,
+        "seed": 106328085,
+        "file": "bootstrap_TIP_C_034.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 35,
+        "seed": 30349564,
+        "file": "bootstrap_TIP_C_035.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 36,
+        "seed": 1855189739,
+        "file": "bootstrap_TIP_C_036.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 37,
+        "seed": 99052376,
+        "file": "bootstrap_TIP_C_037.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 38,
+        "seed": 1250819632,
+        "file": "bootstrap_TIP_C_038.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 39,
+        "seed": 106406362,
+        "file": "bootstrap_TIP_C_039.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 40,
+        "seed": 480404538,
+        "file": "bootstrap_TIP_C_040.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 41,
+        "seed": 1717389822,
+        "file": "bootstrap_TIP_C_041.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 42,
+        "seed": 599121577,
+        "file": "bootstrap_TIP_C_042.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 43,
+        "seed": 200427519,
+        "file": "bootstrap_TIP_C_043.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 44,
+        "seed": 1254751707,
+        "file": "bootstrap_TIP_C_044.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 45,
+        "seed": 2034764475,
+        "file": "bootstrap_TIP_C_045.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 46,
+        "seed": 1573512143,
+        "file": "bootstrap_TIP_C_046.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 47,
+        "seed": 999745294,
+        "file": "bootstrap_TIP_C_047.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 48,
+        "seed": 1958805693,
+        "file": "bootstrap_TIP_C_048.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      },
+      {
+        "index": 49,
+        "seed": 389151677,
+        "file": "bootstrap_TIP_C_049.joblib",
+        "n_real": 151,
+        "n_ctrl": 453,
+        "n_feats": 34
+      }
+    ]
+  }
+}
