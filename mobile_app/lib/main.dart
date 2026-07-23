@@ -47,6 +47,33 @@ class RootShell extends StatefulWidget {
 
 class _RootShellState extends State<RootShell> {
   int _index = 0;
+  AppProvider? _prov;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final prov = context.read<AppProvider>();
+    if (_prov != prov) {
+      _prov?.removeListener(_handleTabRequest);
+      _prov = prov;
+      prov.addListener(_handleTabRequest);
+    }
+  }
+
+  void _handleTabRequest() {
+    final prov = _prov;
+    if (prov == null) return;
+    if (prov.desiredTabIndex != 0 && prov.desiredTabIndex != _index) {
+      setState(() => _index = prov.desiredTabIndex);
+      prov.consumeTabRequest();
+    }
+  }
+
+  @override
+  void dispose() {
+    _prov?.removeListener(_handleTabRequest);
+    super.dispose();
+  }
 
   final _screens = const [
     HomeScreen(),

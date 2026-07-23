@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/zone_model.dart';
+import '../providers/app_provider.dart';
 import '../services/api_service.dart';
 
 class ZoneDetailScreen extends StatefulWidget {
@@ -156,6 +158,17 @@ class _ZoneDetailScreenState extends State<ZoneDetailScreen> {
       appBar: AppBar(
         title: Text(zone.displayName),
         backgroundColor: zone.riskColor.withValues(alpha: 0.15),
+        actions: [
+          if (zone.hasCoordinates)
+            IconButton(
+              icon: const Icon(Icons.map),
+              tooltip: 'Haritada goster',
+              onPressed: () {
+                context.read<AppProvider>().focusOnMap(zone);
+                Navigator.of(context).popUntil((r) => r.isFirst);
+              },
+            ),
+        ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _future,

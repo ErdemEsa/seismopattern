@@ -9,6 +9,9 @@ class AppProvider extends ChangeNotifier {
   Map<String, dynamic>? status;
   List<ZoneModel> zones = [];
 
+  ZoneModel? focusedZone;
+  int desiredTabIndex = 0;
+
   bool isLoadingStatus = false;
   bool isLoadingZones = false;
 
@@ -47,5 +50,21 @@ class AppProvider extends ChangeNotifier {
       isLoadingZones = false;
       notifyListeners();
     }
+  }
+
+  void focusOnMap(ZoneModel zone) {
+    focusedZone = zone;
+    desiredTabIndex = 2;
+    notifyListeners();
+  }
+
+  void clearFocus() {
+    focusedZone = null;
+    notifyListeners();
+  }
+
+  void consumeTabRequest() {
+    desiredTabIndex = 0;
+    notifyListeners();
   }
 }

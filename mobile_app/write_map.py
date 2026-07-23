@@ -1,3 +1,11 @@
+﻿# -*- coding: utf-8 -*-
+"""Regenerates map_screen with focused-zone auto-zoom support."""
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+LIB = ROOT / "lib"
+
+CONTENT = r'''
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -275,3 +283,8 @@ class _SelectedCard extends StatelessWidget {
     );
   }
 }
+'''
+
+path = LIB / "screens" / "map_screen.dart"
+path.write_text(CONTENT.lstrip("\n"), encoding="utf-8", newline="\n")
+print(f"[OK] wrote {path}")
