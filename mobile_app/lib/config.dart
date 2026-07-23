@@ -51,11 +51,11 @@ class AppConfig {
     if (override.isNotEmpty) return _normalize(override);
 
     // 2. Platforma göre varsayılan
-    if (kIsWeb) return 'http://localhost:5000';
+    if (kIsWeb) return 'https://seismopattern.onrender.com';
     try {
-      if (Platform.isAndroid) return 'http://10.0.2.2:5000';
+      if (Platform.isAndroid) return 'https://seismopattern.onrender.com';
     } catch (_) {}
-    return 'http://localhost:5000';
+    return 'https://seismopattern.onrender.com';
   }
 
   static String _normalize(String raw) {
