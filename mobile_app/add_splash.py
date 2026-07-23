@@ -1,37 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+﻿# -*- coding: utf-8 -*-
+"""Adds loading splash screen to Flutter web index.html"""
+from pathlib import Path
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+WEB_DIR = Path("web")
+INDEX = WEB_DIR / "index.html"
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+t = INDEX.read_text(encoding="utf-8")
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
-
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="mobile_app">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>mobile_app</title>
-  <link rel="manifest" href="manifest.json">
-
+# CSS + HTML splash screen
+SPLASH_CSS = """
   <style>
     body {
       margin: 0;
@@ -107,8 +84,9 @@
       padding: 0 20px;
     }
   </style>
-</head>
-<body>
+"""
+
+SPLASH_HTML = """
   <div id="splash">
     <div class="splash-icon">
       <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
@@ -144,15 +122,21 @@
       }
     });
   </script>
+"""
 
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+# CSS'i </head>'den once ekle
+if '#splash' not in t:
+    t = t.replace('</head>', SPLASH_CSS + '</head>')
+    print('[OK] CSS eklendi')
+else:
+    print('CSS zaten mevcut')
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
-</body>
-</html>
+# HTML'i <body> icine hemen ekle
+if '<div id="splash">' not in t:
+    t = t.replace('<body>', '<body>' + SPLASH_HTML)
+    print('[OK] HTML eklendi')
+else:
+    print('HTML zaten mevcut')
+
+INDEX.write_text(t, encoding='utf-8', newline='\n')
+print(f'[DONE] {INDEX} guncellendi')
