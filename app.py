@@ -61,6 +61,66 @@ def add_cors_headers(response):
 @app.route("/healthz")
 def healthz():
     return {"status": "ok"}, 200
+
+
+# ============================================================
+# Flutter Web Serve
+# ============================================================
+FLUTTER_BUILD_DIR = (Path(__file__).parent / "mobile_app" / "build" / "web").resolve()
+print(f"  Flutter build: {FLUTTER_BUILD_DIR} (exists={FLUTTER_BUILD_DIR.exists()})")
+
+@app.route("/")
+def flutter_root():
+    """Serve Flutter web index.html."""
+    if not FLUTTER_BUILD_DIR.exists():
+        return jsonify({"error": "Flutter build not found",
+                        "expected": str(FLUTTER_BUILD_DIR)}), 500
+    return send_from_directory(str(FLUTTER_BUILD_DIR), "index.html")
+
+
+_FLUTTER_ROOT_FILES = {
+    "main.dart.js", "flutter.js", "flutter_bootstrap.js",
+    "flutter_service_worker.js", "manifest.json",
+    "favicon.png", "version.json",
+}
+
+@app.route("/<path:filename>")
+def flutter_root_file(filename):
+    """Serve Flutter root-level asset files (whitelist only)."""
+    if filename in _FLUTTER_ROOT_FILES:
+        return send_from_directory(str(FLUTTER_BUILD_DIR), filename)
+    from flask import abort
+    abort(404)
+
+
+@app.route("/assets/<path:filename>")
+def flutter_assets(filename):
+    """Serve Flutter assets directory."""
+    return send_from_directory(str(FLUTTER_BUILD_DIR / "assets"), filename)
+
+
+@app.route("/canvaskit/<path:filename>")
+def flutter_canvaskit(filename):
+    """Serve Flutter canvaskit binaries."""
+    return send_from_directory(str(FLUTTER_BUILD_DIR / "canvaskit"), filename)
+
+
+@app.route("/icons/<path:filename>")
+def flutter_icons(filename):
+    """Serve Flutter icons."""
+    return send_from_directory(str(FLUTTER_BUILD_DIR / "icons"), filename)
+
+
+@app.errorhandler(404)
+def flutter_spa_fallback(_e):
+    """SPA fallback: unknown paths (except /api/*) get Flutter index.html."""
+    from flask import request
+    if request.path.startswith("/api/") or request.path.startswith("/healthz"):
+        return jsonify({"error": "Not found", "path": request.path}), 404
+    if not FLUTTER_BUILD_DIR.exists():
+        return jsonify({"error": "Flutter build not found"}), 500
+    return send_from_directory(str(FLUTTER_BUILD_DIR), "index.html")
+
 MODEL_DIR = Path("output/models")
 
 sys.path.insert(0, "scripts")
@@ -616,7 +676,7 @@ MODELS, FL = load_models()
 
 from flask import send_from_directory
 
-@app.route("/")
+@app.route("/legacy")
 def index():
     return send_from_directory("templates", "index.html")
 

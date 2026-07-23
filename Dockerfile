@@ -19,6 +19,7 @@ COPY templates/ /app/templates/
 COPY docs/ /app/docs/
 COPY data/ /app/data/
 COPY output/ /app/output/
+COPY mobile_app/build/web /app/mobile_app/build/web
 
 ENV PORT=5000
 EXPOSE 5000

@@ -50,11 +50,21 @@ class AppConfig {
     const override = String.fromEnvironment('API_BASE', defaultValue: '');
     if (override.isNotEmpty) return _normalize(override);
 
-    // 2. Platforma göre varsayılan
-    if (kIsWeb) return 'https://seismopattern.onrender.com';
+    // 2. Web'de: kendi origin'ini kullan (Flask ayni URL'de servis ediyor)
+    if (kIsWeb) {
+      final origin = Uri.base.origin;
+      // localhost gelistirme icin fallback
+      if (origin.contains('localhost') || origin.contains('127.0.0.1')) {
+        return origin;
+      }
+      return origin;
+    }
+
+    // 3. Android emulator icin
     try {
       if (Platform.isAndroid) return 'https://seismopattern.onrender.com';
     } catch (_) {}
+
     return 'https://seismopattern.onrender.com';
   }
 
