@@ -120,3 +120,11 @@ logs/
 !output/counterfactual/*.joblib
 !output/uncertainty_models/
 !output/uncertainty_models/*
+
+# ============================================================
+# Deployment: model metadata + fault database
+# ============================================================
+!output/models/feature_lists.json
+!output/models/model_card.json
+!data/faults/
+!data/faults/*.geojson
