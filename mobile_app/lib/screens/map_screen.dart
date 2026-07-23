@@ -86,7 +86,7 @@ class _MapScreenState extends State<MapScreen> {
                         onTap: () => setState(() => _selected = z),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: z.riskColor.withOpacity(0.75),
+                            color: z.riskColor.withValues(alpha: 0.75),
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.white,
@@ -94,7 +94,7 @@ class _MapScreenState extends State<MapScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.25),
+                                color: Colors.black.withValues(alpha: 0.25),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -151,7 +151,7 @@ class _Legend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white.withOpacity(0.92),
+      color: Colors.white.withValues(alpha: 0.92),
       elevation: 3,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

@@ -289,7 +289,7 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.15),
+                    color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: color),
                   ),
@@ -371,7 +371,7 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
       child: LinearProgressIndicator(
         value: clamped,
         minHeight: 12,
-        backgroundColor: color.withOpacity(0.15),
+        backgroundColor: color.withValues(alpha: 0.15),
         valueColor: AlwaysStoppedAnimation<Color>(color),
       ),
     );

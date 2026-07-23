@@ -78,7 +78,7 @@ class _ZoneDetailScreenState extends State<ZoneDetailScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.15),
+                    color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: color),
                   ),
@@ -155,7 +155,7 @@ class _ZoneDetailScreenState extends State<ZoneDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(zone.displayName),
-        backgroundColor: zone.riskColor.withOpacity(0.15),
+        backgroundColor: zone.riskColor.withValues(alpha: 0.15),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _future,
