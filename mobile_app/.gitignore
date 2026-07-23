@@ -48,3 +48,8 @@ app.*.map.json
 !/build/
 !/build/web/
 !/build/web/**
+
+# Flutter intermediate build cache (do NOT commit)
+build/*.cache.dill.track.dill
+build/[0-9a-f]*/
+build/flutter_assets/

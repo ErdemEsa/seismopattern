@@ -22,8 +22,11 @@ tests/
 *.tar
 image.tar
 
-# Mobile
+# Mobile: source hariç, sadece web build gerekli
 mobile_app/
+!mobile_app/build/
+!mobile_app/build/web/
+!mobile_app/build/web/**
 
 # Logs
 logs/
