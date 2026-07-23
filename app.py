@@ -50,6 +50,12 @@ _QUERY_CACHE_TTL = 7200  # 2 saat
 warnings.filterwarnings("ignore")
 
 app = Flask(__name__)
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+    return response
 MODEL_DIR = Path("output/models")
 
 sys.path.insert(0, "scripts")
