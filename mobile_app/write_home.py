@@ -1,3 +1,11 @@
+﻿# -*- coding: utf-8 -*-
+"""Regenerates home screen with dashboard-style UI."""
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+LIB = ROOT / "lib"
+
+CONTENT = r'''
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -432,3 +440,8 @@ class _RawJsonExpander extends StatelessWidget {
     );
   }
 }
+'''
+
+path = LIB / "screens" / "home_screen.dart"
+path.write_text(CONTENT.lstrip("\n"), encoding="utf-8", newline="\n")
+print(f"[OK] wrote {path}")
