@@ -402,7 +402,7 @@ def build_normalized_features(precursor_df, all_eq_df,
 
         if (idx_count + 1) % 200 == 0:
             pct = (idx_count + 1) / n_total * 100
-            print(f"  {i+1}/{n_total} ({pct:.0f}%) işlendi...")
+            print(f"  {idx_count+1}/{n_total} ({pct:.0f}%) i?lendi...")
 
     result_df = pd.DataFrame(rows)
 
@@ -584,11 +584,26 @@ def train_and_evaluate(real_norm, ctrl_norm):
 
     try:
         imp = best_pipe.named_steps["mdl"].feature_importances_
-        # Imputer/scaler sonrasi feature sayisi degisebilir
-        if len(imp) == len(common):
-            feat_names = common
-        else:
-            feat_names = [f"f_{j}" for j in range(len(imp))]
+
+        # M?mk?nse pipeline'dan ger?ek feature isimlerini al
+        feat_names = None
+        try:
+            feat_names = list(
+                best_pipe[:-1].get_feature_names_out(input_features=common)
+            )
+            feat_names = [
+                str(f).replace("imp__", "").replace("scl__", "")
+                for f in feat_names
+            ]
+        except Exception:
+            feat_names = None
+
+        if feat_names is None or len(feat_names) != len(imp):
+            if len(imp) == len(common):
+                feat_names = list(common)
+            else:
+                feat_names = [f"f_{j}" for j in range(len(imp))]
+
         imp_df = pd.DataFrame({
             "feature": feat_names,
             "importance": imp
