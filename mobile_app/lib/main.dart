@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'config.dart';
 import 'providers/app_provider.dart';
 import 'screens/about_screen.dart';
+import 'screens/analyze_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/zones_screen.dart';
@@ -51,6 +52,7 @@ class _RootShellState extends State<RootShell> {
     HomeScreen(),
     ZonesScreen(),
     MapScreen(),
+    AnalyzeScreen(),
     AboutScreen(),
   ];
 
@@ -58,6 +60,7 @@ class _RootShellState extends State<RootShell> {
     'SeismoPattern',
     'Zones',
     'Harita',
+    'Analiz',
     'Hakkında',
   ];
 
@@ -86,6 +89,11 @@ class _RootShellState extends State<RootShell> {
             icon: Icon(Icons.map_outlined),
             selectedIcon: Icon(Icons.map),
             label: 'Harita',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.analytics_outlined),
+            selectedIcon: Icon(Icons.analytics),
+            label: 'Analiz',
           ),
           NavigationDestination(
             icon: Icon(Icons.info_outline),

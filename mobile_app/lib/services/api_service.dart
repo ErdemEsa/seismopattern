@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
@@ -85,7 +85,7 @@ class ApiService {
       '${AppConfig.baseUrl}${AppConfig.uncertaintyPath}',
     ).replace(queryParameters: {'lat': lat.toString(), 'lon': lon.toString()});
 
-    final response = await http.get(uri).timeout(const Duration(seconds: 25));
+    final response = await http.get(uri).timeout(const Duration(seconds: 60));
 
     if (response.statusCode != 200) {
       throw Exception(
