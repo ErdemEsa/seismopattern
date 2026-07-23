@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'providers/app_provider.dart';
 import 'screens/about_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/map_screen.dart';
 import 'screens/zones_screen.dart';
 
 void main() {
@@ -44,9 +45,19 @@ class RootShell extends StatefulWidget {
 class _RootShellState extends State<RootShell> {
   int _index = 0;
 
-  final _screens = const [HomeScreen(), ZonesScreen(), AboutScreen()];
+  final _screens = const [
+    HomeScreen(),
+    ZonesScreen(),
+    MapScreen(),
+    AboutScreen(),
+  ];
 
-  final _titles = const ['SeismoPattern', 'Zones', 'Hakkında'];
+  final _titles = const [
+    'SeismoPattern',
+    'Zones',
+    'Harita',
+    'Hakkında',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +67,7 @@ class _RootShellState extends State<RootShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (value) {
-          setState(() {
-            _index = value;
-          });
+          setState(() => _index = value);
         },
         destinations: const [
           NavigationDestination(
@@ -70,6 +79,11 @@ class _RootShellState extends State<RootShell> {
             icon: Icon(Icons.public_outlined),
             selectedIcon: Icon(Icons.public),
             label: 'Zones',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.map_outlined),
+            selectedIcon: Icon(Icons.map),
+            label: 'Harita',
           ),
           NavigationDestination(
             icon: Icon(Icons.info_outline),
