@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
@@ -12,7 +12,8 @@ class ApiService {
 
     if (response.statusCode != 200) {
       throw Exception(
-          'Status request failed (${response.statusCode}): ${response.body}');
+        'Status request failed (${response.statusCode}): ${response.body}',
+      );
     }
 
     final decoded = jsonDecode(response.body);
@@ -29,7 +30,8 @@ class ApiService {
 
     if (response.statusCode != 200) {
       throw Exception(
-          'Zones request failed (${response.statusCode}): ${response.body}');
+        'Zones request failed (${response.statusCode}): ${response.body}',
+      );
     }
 
     final decoded = jsonDecode(response.body);
@@ -38,9 +40,7 @@ class ApiService {
     if (decoded is List) {
       for (final item in decoded) {
         if (item is Map) {
-          zones.add(
-            ZoneModel.fromJson(Map<String, dynamic>.from(item)),
-          );
+          zones.add(ZoneModel.fromJson(Map<String, dynamic>.from(item)));
         }
       }
     } else if (decoded is Map<String, dynamic>) {
@@ -49,9 +49,7 @@ class ApiService {
       if (nested is List) {
         for (final item in nested) {
           if (item is Map) {
-            zones.add(
-              ZoneModel.fromJson(Map<String, dynamic>.from(item)),
-            );
+            zones.add(ZoneModel.fromJson(Map<String, dynamic>.from(item)));
           }
         }
       } else if (nested is Map) {
@@ -83,13 +81,9 @@ class ApiService {
     required double lat,
     required double lon,
   }) async {
-    final uri = Uri.parse('${AppConfig.baseUrl}${AppConfig.uncertaintyPath}')
-        .replace(
-      queryParameters: {
-        'lat': lat.toString(),
-        'lon': lon.toString(),
-      },
-    );
+    final uri = Uri.parse(
+      '${AppConfig.baseUrl}${AppConfig.uncertaintyPath}',
+    ).replace(queryParameters: {'lat': lat.toString(), 'lon': lon.toString()});
 
     final response = await http.get(uri).timeout(const Duration(seconds: 25));
 
