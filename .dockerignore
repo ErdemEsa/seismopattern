@@ -1,24 +1,51 @@
-venv/
+﻿# Python
 __pycache__/
 *.pyc
 *.pyo
-*.log
+*.pyd
+.Python
+venv/
+.venv/
+env/
+.env
+
+# Git
 .git/
 .gitignore
-.idea/
+.gitattributes
+
+# Testing / dev
+.pytest_cache/
+.mypy_cache/
+.coverage
+tests/
+*.tar
+image.tar
+
+# Mobile
+mobile_app/
+
+# Logs
+logs/
+*.log
+
+# IDE
 .vscode/
-requirements_full.txt
-requirements_train.txt
-scripts/create_docs_broken_backup.py
-output/prospective/archive/
-output/prospective/*.db-journal
-output/isc_regional/
-output/usgs_regional/
-output/reports/
-data/gps/
-data/faults/
-output/gcmt_precursor_features.csv
-output/gcmt_control_features.csv
+.idea/
+*.swp
+
+# Docs artifacts
+*.pdf
+
+# Docker
+docker-compose*.yml
+Dockerfile.dev
+
+# Large files not needed at runtime
+output/lstm/
+output/counterfactual/*.png
+output/shap_analysis/*.png
+output/stats_validation/*.png
 output/all_earthquakes.csv
-output/all_earthquakes_declustered.csv
-output/gcmt_precursor_features_moving_b_experimental.csv
+output/aftershocks_removed.csv
+output/seismo_pattern.db
