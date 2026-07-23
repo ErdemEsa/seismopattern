@@ -1,6 +1,6 @@
 # SeismoPattern
 
-[![Backend](https://img.shields.io/badge/Backend-Live-brightgreen)](https://seismopattern.onrender.com/api/status)
+[![Live Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://seismopattern.onrender.com)
 [![Model AUC](https://img.shields.io/badge/AUC-0.8943-blue)]()
 [![Zone Coverage](https://img.shields.io/badge/Zones-59-orange)]()
 [![Tests](https://img.shields.io/badge/Tests-12%2F12-brightgreen)]()
