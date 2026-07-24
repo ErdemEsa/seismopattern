@@ -296,10 +296,7 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
                   ),
                   child: Text(
                     label,
-                    style: TextStyle(
-                      color: color,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -308,15 +305,15 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ],
-            )
-                const SizedBox(height: 16),
-                Builder(
-                  builder: (context) {
-                    final lat = double.tryParse(_latController.text) ?? 0.0;
-                    final lon = double.tryParse(_lonController.text) ?? 0.0;
-                    return PdfDownloadButton(lat: lat, lon: lon);
-                  },
-                ),,
+            ),
+            const SizedBox(height: 16),
+            Builder(
+              builder: (context) {
+                final lat = double.tryParse(_latController.text) ?? 0.0;
+                final lon = double.tryParse(_lonController.text) ?? 0.0;
+                return PdfDownloadButton(lat: lat, lon: lon);
+              },
+            ),
             const SizedBox(height: 14),
             const Text('Mean (ortalama skor)'),
             const SizedBox(height: 4),
@@ -345,9 +342,13 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(child: _stat('Model sayısı', nModels?.toString() ?? '-')),
+                Expanded(
+                  child: _stat('Model sayısı', nModels?.toString() ?? '-'),
+                ),
                 Expanded(child: _stat('Pattern', patternType)),
-                Expanded(child: _stat('Olay sayısı', nEvents?.toString() ?? '-')),
+                Expanded(
+                  child: _stat('Olay sayısı', nEvents?.toString() ?? '-'),
+                ),
               ],
             ),
             const SizedBox(height: 12),

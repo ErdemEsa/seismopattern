@@ -113,70 +113,66 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
   Widget build(BuildContext context) {
     return switch (_state) {
       _PdfState.idle => ElevatedButton.icon(
-          onPressed: _start,
-          icon: const Icon(Icons.picture_as_pdf),
-          label: const Text('PDF Rapor Indir'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF388bfd),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          ),
+        onPressed: _start,
+        icon: const Icon(Icons.picture_as_pdf),
+        label: const Text('PDF Rapor Indir'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF388bfd),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         ),
+      ),
       _PdfState.starting || _PdfState.polling => ElevatedButton.icon(
-          onPressed: null,
-          icon: const SizedBox(
-            width: 16,
-            height: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: Colors.white,
-            ),
-          ),
-          label: Text(
-            _state == _PdfState.starting
-                ? 'Baslatiyor...'
-                : 'Hazirlaniyor... ($_checks)',
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF388bfd).withValues(alpha: 0.6),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          ),
+        onPressed: null,
+        icon: const SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
         ),
+        label: Text(
+          _state == _PdfState.starting
+              ? 'Baslatiyor...'
+              : 'Hazirlaniyor... ($_checks)',
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF388bfd).withValues(alpha: 0.6),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        ),
+      ),
       _PdfState.ready => ElevatedButton.icon(
-          onPressed: _download,
-          icon: const Icon(Icons.download_done),
-          label: const Text('Tekrar Indir'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF3fb950),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          ),
+        onPressed: _download,
+        icon: const Icon(Icons.download_done),
+        label: const Text('Tekrar Indir'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF3fb950),
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         ),
+      ),
       _PdfState.error => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ElevatedButton.icon(
-              onPressed: _start,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Tekrar Dene'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFf85149),
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ElevatedButton.icon(
+            onPressed: _start,
+            icon: const Icon(Icons.refresh),
+            label: const Text('Tekrar Dene'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFf85149),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+          ),
+          if (_errorMsg != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                _errorMsg!,
+                style: const TextStyle(fontSize: 11, color: Colors.red),
               ),
             ),
-            if (_errorMsg != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  _errorMsg!,
-                  style: const TextStyle(fontSize: 11, color: Colors.red),
-                ),
-              ),
-          ],
-        ),
+        ],
+      ),
     };
   }
 }

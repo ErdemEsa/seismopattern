@@ -11,10 +11,7 @@ import '../services/api_service.dart';
 class ZoneDetailScreen extends StatefulWidget {
   final ZoneModel zone;
 
-  const ZoneDetailScreen({
-    super.key,
-    required this.zone,
-  });
+  const ZoneDetailScreen({super.key, required this.zone});
 
   @override
   State<ZoneDetailScreen> createState() => _ZoneDetailScreenState();
@@ -87,10 +84,7 @@ class _ZoneDetailScreenState extends State<ZoneDetailScreen> {
                   ),
                   child: Text(
                     zone.riskLevelDisplay,
-                    style: TextStyle(
-                      color: color,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -128,13 +122,12 @@ class _ZoneDetailScreenState extends State<ZoneDetailScreen> {
               '${zone.lat?.toStringAsFixed(3) ?? '-'}, ${zone.lon?.toStringAsFixed(3) ?? '-'}',
             ),
 
-          const SizedBox(height: 16),
-          Center(
-            child: PdfDownloadButton(
-              lat: zone.lat,
-              lon: zone.lon,
-            ),
-          ),
+            if (zone.lat != null && zone.lon != null) ...[
+              const SizedBox(height: 16),
+              Center(
+                child: PdfDownloadButton(lat: zone.lat!, lon: zone.lon!),
+              ),
+            ],
           ],
         ),
       ),
@@ -238,8 +231,9 @@ class _ZoneDetailScreenState extends State<ZoneDetailScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: SelectableText(
-                        const JsonEncoder.withIndent('  ')
-                            .convert(snapshot.data),
+                        const JsonEncoder.withIndent(
+                          '  ',
+                        ).convert(snapshot.data),
                         style: const TextStyle(fontFamily: 'monospace'),
                       ),
                     ),

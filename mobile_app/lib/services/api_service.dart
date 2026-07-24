@@ -1,4 +1,4 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
@@ -111,8 +111,9 @@ class ApiService {
       'lon': lon.toStringAsFixed(4),
     };
     if (refDate != null) params['ref_date'] = refDate;
-    final uri = Uri.parse('${AppConfig.baseUrl}/api/pdf/start')
-        .replace(queryParameters: params);
+    final uri = Uri.parse(
+      '${AppConfig.baseUrl}/api/pdf/start',
+    ).replace(queryParameters: params);
     final response = await http.get(uri).timeout(const Duration(seconds: 15));
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
@@ -127,8 +128,9 @@ class ApiService {
       'lon': lon.toStringAsFixed(4),
     };
     if (refDate != null) params['ref_date'] = refDate;
-    final uri = Uri.parse('${AppConfig.baseUrl}/api/pdf/status')
-        .replace(queryParameters: params);
+    final uri = Uri.parse(
+      '${AppConfig.baseUrl}/api/pdf/status',
+    ).replace(queryParameters: params);
     final response = await http.get(uri).timeout(const Duration(seconds: 15));
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
@@ -143,8 +145,8 @@ class ApiService {
       'lon': lon.toStringAsFixed(4),
     };
     if (refDate != null) params['ref_date'] = refDate;
-    return Uri.parse('${AppConfig.baseUrl}/api/pdf')
-        .replace(queryParameters: params)
-        .toString();
+    return Uri.parse(
+      '${AppConfig.baseUrl}/api/pdf',
+    ).replace(queryParameters: params).toString();
   }
 }
