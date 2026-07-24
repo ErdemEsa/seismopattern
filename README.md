@@ -200,3 +200,22 @@ Ekran goruntuleri icin bakiniz: mobile_app/docs/screenshots/
 - Static site olarak Render'a deploy edilebilir
 - Ya da bagimsiz her yerde host edilebilir
 - Backend URL runtime'da degistirilebilir (Ayarlar ekrani)
+
+
+## Screenshots
+
+| Ana Sayfa | Zones |
+|-----------|-------|
+| ![Home](mobile_app/docs/screenshots/home.png) | ![Zones](mobile_app/docs/screenshots/zones.png) |
+
+| Zone Detay | Harita |
+|------------|--------|
+| ![Zone Detail](mobile_app/docs/screenshots/zone-detail.png) | ![Map](mobile_app/docs/screenshots/map.png) |
+
+| Harita (Odakli Zone) | Analiz |
+|----------------------|--------|
+| ![Map Focused](mobile_app/docs/screenshots/map-focused-zone.png) | ![Analyze](mobile_app/docs/screenshots/analyze.png) |
+
+| Ayarlar |
+|---------|
+| ![Settings](mobile_app/docs/screenshots/about-or-settings.png) |
