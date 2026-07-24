@@ -28,6 +28,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import warnings
+import time
 warnings.filterwarnings("ignore")
 
 from pathlib import Path
@@ -251,6 +252,51 @@ def train_bootstrap(n_bootstrap: int = 30, random_seed: int = 0):
 # Tahmin
 # -------------------------------------------------------
 _cache = {}
+_result_cache = {}
+_RESULT_CACHE_TTL = 1800
+
+def _normalize_cache_value(value):
+    try:
+        if value is None:
+            return None
+        if isinstance(value, (int, float, np.integer, np.floating)):
+            if np.isnan(value):
+                return None
+            return round(float(value), 6)
+    except Exception:
+        pass
+    try:
+        return round(float(value), 6)
+    except Exception:
+        return str(value)
+
+def _features_cache_key(features: dict) -> str:
+    norm = {k: _normalize_cache_value(v) for k, v in sorted(features.items())}
+    return json.dumps(norm, sort_keys=True, ensure_ascii=True)
+
+def _get_cached_result(cache_key: str):
+    item = _result_cache.get(cache_key)
+    if not item:
+        return None
+    if (time.time() - item["ts"]) > _RESULT_CACHE_TTL:
+        _result_cache.pop(cache_key, None)
+        return None
+    return dict(item["value"])
+
+def _set_cached_result(cache_key: str, value: dict):
+    _result_cache[cache_key] = {
+        "ts": time.time(),
+        "value": dict(value),
+    }
+
+def preload_bootstrap_models():
+    models = _load_bootstrap_models()
+    total = sum(len(v["pipes"]) for v in models.values())
+    return {
+        "loaded_models": total,
+        "types": sorted(models.keys()),
+    }
+
 
 
 def _load_bootstrap_models():
@@ -385,6 +431,25 @@ def predict_with_uncertainty(features: dict) -> dict:
         "cross_type_means": cross_type_means,
     }
 
+
+
+_original_predict_with_uncertainty = predict_with_uncertainty
+
+def predict_with_uncertainty(features: dict) -> dict:
+    cache_key = _features_cache_key(features)
+    cached = _get_cached_result(cache_key)
+    if cached is not None:
+        cached["cache_hit"] = True
+        return cached
+
+    result = _original_predict_with_uncertainty(features)
+
+    if isinstance(result, dict) and "error" not in result:
+        _set_cached_result(cache_key, result)
+        result = dict(result)
+        result["cache_hit"] = False
+
+    return result
 
 # -------------------------------------------------------
 # CLI

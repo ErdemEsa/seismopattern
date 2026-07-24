@@ -19,7 +19,7 @@ from flask import Flask, jsonify, render_template_string, request
 # =========================================================
 
 import time as _time
-
+import threading
 _STARTUP = _time.time()
 
 # Tüm modüller burada bir kez yüklenir
@@ -670,6 +670,33 @@ def load_models():
 
 MODELS, FL = load_models()
 
+_BOOTSTRAP_PRELOAD_STARTED = False
+_BOOTSTRAP_PRELOAD_DONE = False
+_BOOTSTRAP_PRELOAD_INFO = {}
+_BOOTSTRAP_PRELOAD_ERROR = None
+
+def _bootstrap_preload_worker():
+    global _BOOTSTRAP_PRELOAD_DONE, _BOOTSTRAP_PRELOAD_INFO, _BOOTSTRAP_PRELOAD_ERROR
+    try:
+        from bootstrap_uncertainty import preload_bootstrap_models
+        _BOOTSTRAP_PRELOAD_INFO = preload_bootstrap_models()
+        _BOOTSTRAP_PRELOAD_DONE = True
+    except Exception as e:
+        _BOOTSTRAP_PRELOAD_ERROR = str(e)
+
+def _ensure_bootstrap_preload_started():
+    global _BOOTSTRAP_PRELOAD_STARTED
+    if _BOOTSTRAP_PRELOAD_STARTED:
+        return
+    _BOOTSTRAP_PRELOAD_STARTED = True
+    t = threading.Thread(
+        target=_bootstrap_preload_worker,
+        daemon=True,
+        name="bootstrap-preload",
+    )
+    t.start()
+
+_ensure_bootstrap_preload_started()
 # =========================================================
 # ROUTES
 # =========================================================
