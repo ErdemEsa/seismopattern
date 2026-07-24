@@ -1306,7 +1306,7 @@ def api_alerts_check():
 # =========================================================
 
 try:
-    from pdf_report import generate_pdf_for_app, get_pdf_cache_path
+    from pdf_report import generate_pdf, generate_pdf_for_app, get_pdf_cache_path
     HAS_PDF = True
 except Exception:
     HAS_PDF = False
@@ -1314,6 +1314,244 @@ except Exception:
 
 _PDF_JOBS = {}
 _PDF_JOBS_LOCK = threading.Lock()
+_PDF_DATA_CACHE = {}
+_PDF_DATA_CACHE_TTL = 3600  # 1 saat
+
+def _pdf_data_cache_key(lat, lon, ref):
+    return f"{lat:.4f}:{lon:.4f}:{ref or 'current'}"
+
+def _get_cached_pdf_data(lat, lon, ref):
+    key = _pdf_data_cache_key(lat, lon, ref)
+    with _PDF_JOBS_LOCK:
+        item = _PDF_DATA_CACHE.get(key)
+        if not item:
+            return None
+        if (_time.time() - item.get("ts", 0)) > _PDF_DATA_CACHE_TTL:
+            _PDF_DATA_CACHE.pop(key, None)
+            return None
+        return dict(item.get("data", {}))
+
+def _set_cached_pdf_data(lat, lon, ref, data):
+    key = _pdf_data_cache_key(lat, lon, ref)
+    with _PDF_JOBS_LOCK:
+        _PDF_DATA_CACHE[key] = {
+            "ts": _time.time(),
+            "data": dict(data),
+        }
+
+def _compute_pdf_risk_summary(row):
+    try:
+        row = dict(row)
+        c0 = float(row.get("count_0_1y", 0) or 0)
+        c1 = float(row.get("count_1_2y", 0) or 0)
+        c2 = float(row.get("count_2_3y", 0) or 0)
+
+        row["count_linear_trend"] = c0 - c2
+        row["count_accel_ratio"] = c0 / ((c1 + c2) / 2.0 + 1e-6)
+
+        try:
+            row["b_drop_w3_w1"] = float(row.get("w3_b_value", 0) or 0) - float(row.get("w1_b_value", 0) or 0)
+        except Exception:
+            row["b_drop_w3_w1"] = 0
+
+        try:
+            row["spatial_focus_change"] = float(row.get("w3_mean_dist_km", 0) or 0) - float(row.get("w1_mean_dist_km", 0) or 0)
+        except Exception:
+            row["spatial_focus_change"] = 0
+
+        try:
+            row["depth_change_km"] = float(row.get("w1_mean_depth_km", 0) or 0) - float(row.get("w3_mean_depth_km", 0) or 0)
+        except Exception:
+            row["depth_change_km"] = 0
+
+        if not row.get("quiescence_ratio"):
+            prev = (c1 + c2) / 2.0
+            row["quiescence_ratio"] = c0 / prev if prev > 0 else None
+
+        if not row.get("w3_n_events"):
+            row["w3_n_events"] = c0 + c1 + c2
+        if not row.get("w1_n_events"):
+            row["w1_n_events"] = c0
+
+        qr = row.get("quiescence_ratio")
+        n3 = row.get("w3_n_events", 0) or 0
+
+        if qr is None or pd.isna(qr) or n3 < 3:
+            pt = "TIP_C"
+        elif qr < 0.5:
+            pt = "TIP_B"
+        elif qr >= 1.0:
+            pt = "TIP_A"
+        else:
+            pt = "TIP_A"
+
+        comp = {}
+        for tip in ("TIP_A", "TIP_B", "TIP_C"):
+            if tip not in MODELS:
+                continue
+            pipe, feats_list = MODELS[tip]
+            x = pd.DataFrame([{f: row.get(f, np.nan) for f in feats_list}])
+            comp[tip] = round(float(pipe.predict_proba(x)[0, 1]), 4)
+
+        primary = comp.get(pt)
+        valid = {t: s for t, s in comp.items() if s is not None}
+        if not valid:
+            return None
+
+        W = {"TIP_A": 1.0, "TIP_B": 1.2, "TIP_C": 0.5}
+        ws = sum(W.get(t, 1.0) * s for t, s in valid.items())
+        wt = sum(W.get(t, 1.0) for t in valid)
+        ens = ws / wt if wt > 0 else 0.5
+        fin = 0.7 * primary + 0.3 * ens if primary is not None else ens
+
+        if fin >= 0.75:
+            lv = "KRITIK"
+        elif fin >= 0.60:
+            lv = "YUKSEK"
+        elif fin >= 0.45:
+            lv = "ORTA"
+        elif fin >= 0.30:
+            lv = "DIKKAT"
+        else:
+            lv = "DUSUK"
+
+        return {
+            "score": round(float(fin), 4),
+            "level": lv,
+            "pattern": pt,
+            "components": comp,
+        }
+    except Exception:
+        return None
+
+def _seed_pdf_data_from_uncertainty(lat, lon, ref, feats, meta, uncertainty):
+    data = _get_cached_pdf_data(lat, lon, ref) or {
+        "lat": lat,
+        "lon": lon,
+        "ref_date": ref,
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+
+    data["lat"] = lat
+    data["lon"] = lon
+    data["ref_date"] = ref
+    data["timestamp"] = data.get("timestamp") or datetime.utcnow().isoformat()
+    data["seismic_features"] = dict(feats or {})
+    data["seismic_meta"] = dict(meta or {})
+
+    if isinstance(uncertainty, dict) and "error" not in uncertainty:
+        data["uncertainty"] = dict(uncertainty)
+
+    risk = _compute_pdf_risk_summary(data.get("seismic_features", {}))
+    if risk:
+        data["risk"] = risk
+
+    _set_cached_pdf_data(lat, lon, ref, data)
+
+def _build_pdf_data_bundle(lat, lon, ref):
+    data = _get_cached_pdf_data(lat, lon, ref) or {
+        "lat": lat,
+        "lon": lon,
+        "ref_date": ref,
+        "timestamp": datetime.utcnow().isoformat(),
+    }
+
+    data["lat"] = lat
+    data["lon"] = lon
+    data["ref_date"] = ref
+    data["timestamp"] = data.get("timestamp") or datetime.utcnow().isoformat()
+
+    if "seismic_features" not in data or "seismic_meta" not in data:
+        feats, meta = fetch_best(lat, lon, 300, 2.5, ref_date=ref)
+        if feats is None:
+            raise ValueError("PDF icin sismik veri alinamadi")
+        data["seismic_features"] = dict(feats)
+        data["seismic_meta"] = dict(meta or {})
+
+    if "risk" not in data:
+        risk = _compute_pdf_risk_summary(data.get("seismic_features", {}))
+        if risk:
+            data["risk"] = risk
+
+    if "zone" not in data:
+        try:
+            zones_path = Path("data/zones_extended.json")
+            if zones_path.exists():
+                zones_raw = json.loads(zones_path.read_text(encoding="utf-8"))
+                if isinstance(zones_raw, dict):
+                    zone_iter = list(zones_raw.values())
+                elif isinstance(zones_raw, list):
+                    zone_iter = zones_raw
+                else:
+                    zone_iter = []
+
+                best_zone = None
+                best_dist = None
+
+                for z in zone_iter:
+                    if not isinstance(z, dict):
+                        continue
+                    zlat = z.get("lat")
+                    zlon = z.get("lon")
+                    if zlat is None or zlon is None:
+                        continue
+                    try:
+                        d = ((float(zlat) - lat) ** 2 + (float(zlon) - lon) ** 2) ** 0.5
+                    except Exception:
+                        continue
+                    if best_dist is None or d < best_dist:
+                        best_dist = d
+                        best_zone = z
+
+                if best_zone and best_dist is not None and best_dist < 5.0:
+                    data["zone"] = dict(best_zone)
+        except Exception:
+            pass
+
+    if "faults" not in data:
+        try:
+            from fault_distance import get_fault_info_for_app
+            data["faults"] = get_fault_info_for_app(lat, lon)
+        except Exception:
+            pass
+
+    if "cff" not in data:
+        try:
+            from coulomb_simple import compute_cff_for_app
+            data["cff"] = compute_cff_for_app(lat, lon, ref)
+        except Exception:
+            pass
+
+    if "gps" not in data:
+        try:
+            from gps_velocity import get_gps_info_for_app
+            data["gps"] = get_gps_info_for_app(lat, lon)
+        except Exception:
+            pass
+
+    if "nlp" not in data:
+        try:
+            from nlp_scanner import get_nlp_info_for_app
+            data["nlp"] = get_nlp_info_for_app(lat, lon)
+        except Exception:
+            pass
+
+    _set_cached_pdf_data(lat, lon, ref, data)
+    return data
+
+def _generate_pdf_from_bundle(lat, lon, ref):
+    cache_path = Path(str(get_pdf_cache_path(lat, lon, ref)))
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if cache_path.exists():
+        age = _time.time() - cache_path.stat().st_mtime
+        if age < _PDF_DATA_CACHE_TTL:
+            return str(cache_path)
+
+    data = _build_pdf_data_bundle(lat, lon, ref)
+    out = generate_pdf(data, str(cache_path))
+    return str(out)
+
 
 
 def _pdf_job_key(lat, lon, ref):
@@ -1341,7 +1579,7 @@ def _start_pdf_job(lat, lon, ref):
 
     def worker():
         try:
-            path = generate_pdf_for_app(lat, lon, ref)
+            path = _generate_pdf_from_bundle(lat, lon, ref)
             with _PDF_JOBS_LOCK:
                 _PDF_JOBS[key] = {
                     "status": "ready",
