@@ -1323,8 +1323,6 @@ def api_pdf():
             return jsonify({"error": "PDF modulu yuklu degil"}), 500
 
         # Cache'li veriyi kullan (tekrar ISC cekme)
-        feats, meta = fetch_best(lat, lon, 300, 2.5, ref_date=ref)
-
         path = generate_pdf_for_app(lat, lon, ref)
         return send_from_directory(
             str(Path(path).parent),

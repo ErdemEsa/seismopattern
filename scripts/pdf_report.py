@@ -11,6 +11,7 @@ Kullanim:
 """
 
 import json
+import time
 import sys
 import math
 import argparse
@@ -643,11 +644,33 @@ def generate_pdf(data, output_path=None):
 # APP ENTEGRASYONU
 # =========================================================
 
+_PDF_CACHE_TTL = 3600  # 1 saat
+
 def generate_pdf_for_app(lat, lon, ref_date=None):
-    """app.py'den cagirilacak fonksiyon."""
+    """app.py'den cagirilacak fonksiyon. Deterministik disk cache ile."""
+    import re as _re
+
+    tag = f"{lat:.4f}_{lon:.4f}"
+    if ref_date:
+        tag += f"_{ref_date}"
+
+    safe_tag = _re.sub(r"[^a-zA-Z0-9_\-]", "_", tag)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    cache_path = OUTPUT_DIR / f"SeismoPattern_cache_{safe_tag}.pdf"
+
+    if cache_path.exists():
+        age = time.time() - cache_path.stat().st_mtime
+        if age < _PDF_CACHE_TTL:
+            return str(cache_path)
+        try:
+            cache_path.unlink()
+        except Exception:
+            pass
+
     data = collect_data(lat, lon, ref_date)
-    path = generate_pdf(data)
-    return path
+    path = generate_pdf(data, str(cache_path))
+    return str(path)
 
 
 # =========================================================
