@@ -1539,6 +1539,43 @@ def _build_pdf_data_bundle(lat, lon, ref):
     _set_cached_pdf_data(lat, lon, ref, data)
     return data
 
+def _prewarm_pdf_bundle_async(lat, lon, ref):
+    """Uncertainty sonrasi PDF icin gerekli tum verileri arka planda hazirla."""
+    key = _pdf_data_cache_key(lat, lon, ref)
+
+    with _PDF_JOBS_LOCK:
+        existing = _PDF_JOBS.get(f"prewarm:{key}")
+        if existing and existing.get("status") == "running":
+            return
+        _PDF_JOBS[f"prewarm:{key}"] = {
+            "status": "running",
+            "started_at": _time.time(),
+        }
+
+    def worker():
+        try:
+            _build_pdf_data_bundle(lat, lon, ref)
+            with _PDF_JOBS_LOCK:
+                _PDF_JOBS[f"prewarm:{key}"] = {
+                    "status": "ready",
+                    "started_at": _PDF_JOBS.get(f"prewarm:{key}", {}).get("started_at", _time.time()),
+                    "updated_at": _time.time(),
+                }
+        except Exception as e:
+            with _PDF_JOBS_LOCK:
+                _PDF_JOBS[f"prewarm:{key}"] = {
+                    "status": "error",
+                    "error": str(e),
+                    "updated_at": _time.time(),
+                }
+
+    threading.Thread(
+        target=worker,
+        daemon=True,
+        name=f"prewarm-{key.replace(':', '_')}",
+    ).start()
+
+
 def _generate_pdf_from_bundle(lat, lon, ref):
     cache_path = Path(str(get_pdf_cache_path(lat, lon, ref)))
     cache_path.parent.mkdir(parents=True, exist_ok=True)
