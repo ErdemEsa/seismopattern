@@ -1,3 +1,4 @@
+import '../widgets/pdf_download_button.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -126,6 +127,14 @@ class _ZoneDetailScreenState extends State<ZoneDetailScreen> {
               'Konum',
               '${zone.lat?.toStringAsFixed(3) ?? '-'}, ${zone.lon?.toStringAsFixed(3) ?? '-'}',
             ),
+
+          const SizedBox(height: 16),
+          Center(
+            child: PdfDownloadButton(
+              lat: zone.lat,
+              lon: zone.lon,
+            ),
+          ),
           ],
         ),
       ),

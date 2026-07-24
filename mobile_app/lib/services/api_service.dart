@@ -100,4 +100,51 @@ class ApiService {
 
     return {'data': decoded};
   }
+
+  Future<Map<String, dynamic>> startPdfGeneration({
+    required double lat,
+    required double lon,
+    String? refDate,
+  }) async {
+    final params = <String, String>{
+      'lat': lat.toStringAsFixed(4),
+      'lon': lon.toStringAsFixed(4),
+    };
+    if (refDate != null) params['ref_date'] = refDate;
+    final uri = Uri.parse('${AppConfig.baseUrl}/api/pdf/start')
+        .replace(queryParameters: params);
+    final response = await http.get(uri).timeout(const Duration(seconds: 15));
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getPdfStatus({
+    required double lat,
+    required double lon,
+    String? refDate,
+  }) async {
+    final params = <String, String>{
+      'lat': lat.toStringAsFixed(4),
+      'lon': lon.toStringAsFixed(4),
+    };
+    if (refDate != null) params['ref_date'] = refDate;
+    final uri = Uri.parse('${AppConfig.baseUrl}/api/pdf/status')
+        .replace(queryParameters: params);
+    final response = await http.get(uri).timeout(const Duration(seconds: 15));
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  String getPdfDownloadUrl({
+    required double lat,
+    required double lon,
+    String? refDate,
+  }) {
+    final params = <String, String>{
+      'lat': lat.toStringAsFixed(4),
+      'lon': lon.toStringAsFixed(4),
+    };
+    if (refDate != null) params['ref_date'] = refDate;
+    return Uri.parse('${AppConfig.baseUrl}/api/pdf')
+        .replace(queryParameters: params)
+        .toString();
+  }
 }

@@ -1,3 +1,4 @@
+import '../widgets/pdf_download_button.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -307,7 +308,15 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
               ],
-            ),
+            )
+                const SizedBox(height: 16),
+                Builder(
+                  builder: (context) {
+                    final lat = double.tryParse(_latController.text) ?? 0.0;
+                    final lon = double.tryParse(_lonController.text) ?? 0.0;
+                    return PdfDownloadButton(lat: lat, lon: lon);
+                  },
+                ),,
             const SizedBox(height: 14),
             const Text('Mean (ortalama skor)'),
             const SizedBox(height: 4),
