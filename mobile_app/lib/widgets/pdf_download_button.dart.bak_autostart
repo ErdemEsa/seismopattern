@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../config.dart';
 
 // Web icin dart:html kullan
 // ignore: avoid_web_libraries_in_flutter
@@ -12,14 +14,12 @@ class PdfDownloadButton extends StatefulWidget {
   final double lat;
   final double lon;
   final String? refDate;
-  final bool autoStart;
 
   const PdfDownloadButton({
     super.key,
     required this.lat,
     required this.lon,
     this.refDate,
-    this.autoStart = false,
   });
 
   @override
@@ -32,53 +32,11 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
   String? _errorMsg;
   Timer? _timer;
   int _checks = 0;
-  String? _autoStartedForKey;
-
-  String _targetKey() =>
-      '${widget.lat.toStringAsFixed(4)}|${widget.lon.toStringAsFixed(4)}|${widget.refDate ?? ''}';
-
-  @override
-  void initState() {
-    super.initState();
-    _scheduleAutoStartIfNeeded();
-  }
-
-  @override
-  void didUpdateWidget(covariant PdfDownloadButton oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final oldKey =
-        '${oldWidget.lat.toStringAsFixed(4)}|${oldWidget.lon.toStringAsFixed(4)}|${oldWidget.refDate ?? ''}';
-    final newKey = _targetKey();
-
-    if (oldKey != newKey) {
-      _timer?.cancel();
-      _checks = 0;
-      _errorMsg = null;
-      _state = _PdfState.idle;
-      _autoStartedForKey = null;
-      _scheduleAutoStartIfNeeded();
-    }
-  }
 
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
-  }
-
-  void _scheduleAutoStartIfNeeded() {
-    if (!widget.autoStart) return;
-
-    final key = _targetKey();
-    if (_autoStartedForKey == key) return;
-    _autoStartedForKey = key;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (_state == _PdfState.idle || _state == _PdfState.error) {
-        _start();
-      }
-    });
   }
 
   Future<void> _start() async {
@@ -96,19 +54,13 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
       );
 
       if (r['status'] == 'ready') {
-        if (mounted) {
-          setState(() => _state = _PdfState.ready);
-        }
+        setState(() => _state = _PdfState.ready);
         _download();
         return;
       }
 
-      if (mounted) {
-        setState(() => _state = _PdfState.polling);
-      }
-
-      _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 10), (_) => _poll());
+      setState(() => _state = _PdfState.polling);
+      _timer = Timer.periodic(const Duration(seconds: 12), (_) => _poll());
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -144,6 +96,7 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
         if (mounted) {
           setState(() => _state = _PdfState.ready);
         }
+        _download();
       } else if (r['status'] == 'error') {
         _timer?.cancel();
         if (mounted) {
@@ -186,9 +139,7 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
       _PdfState.idle => ElevatedButton.icon(
         onPressed: _start,
         icon: const Icon(Icons.picture_as_pdf),
-        label: Text(
-          widget.autoStart ? 'PDF Hazirlaniyor / Indir' : 'PDF Rapor Indir',
-        ),
+        label: const Text('PDF Rapor Indir'),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF388bfd),
           foregroundColor: Colors.white,
@@ -204,8 +155,8 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
         ),
         label: Text(
           _state == _PdfState.starting
-              ? 'PDF baslatiliyor...'
-              : 'PDF arka planda hazirlaniyor... ($_checks)',
+              ? 'Baslatiyor...'
+              : 'Hazirlaniyor... ilk olusturma 3-4 dk surebilir ($_checks)',
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF388bfd).withValues(alpha: 0.6),
@@ -216,7 +167,7 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
       _PdfState.ready => ElevatedButton.icon(
         onPressed: _download,
         icon: const Icon(Icons.download_done),
-        label: const Text('PDF Hazir - Indir'),
+        label: const Text('Tekrar Indir'),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF3fb950),
           foregroundColor: Colors.white,
@@ -230,7 +181,7 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
           ElevatedButton.icon(
             onPressed: _start,
             icon: const Icon(Icons.refresh),
-            label: const Text('PDF Tekrar Dene'),
+            label: const Text('Tekrar Dene'),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFf85149),
               foregroundColor: Colors.white,

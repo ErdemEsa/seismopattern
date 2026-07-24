@@ -307,15 +307,13 @@ class _AnalyzeScreenState extends State<AnalyzeScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            if (_lastLat != null && _lastLon != null)
-              PdfDownloadButton(
-                key: ValueKey(
-                  'pdf-${_lastLat!.toStringAsFixed(4)}-${_lastLon!.toStringAsFixed(4)}',
-                ),
-                lat: _lastLat!,
-                lon: _lastLon!,
-                autoStart: true,
-              ),
+            Builder(
+              builder: (context) {
+                final lat = double.tryParse(_latController.text) ?? 0.0;
+                final lon = double.tryParse(_lonController.text) ?? 0.0;
+                return PdfDownloadButton(lat: lat, lon: lon);
+              },
+            ),
             const SizedBox(height: 14),
             const Text('Mean (ortalama skor)'),
             const SizedBox(height: 4),
