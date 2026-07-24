@@ -125,7 +125,14 @@ class _ZoneDetailScreenState extends State<ZoneDetailScreen> {
             if (zone.lat != null && zone.lon != null) ...[
               const SizedBox(height: 16),
               Center(
-                child: PdfDownloadButton(lat: zone.lat!, lon: zone.lon!),
+                child: PdfDownloadButton(
+                  key: ValueKey(
+                    'pdf-zone-${zone.name}-${zone.lat!.toStringAsFixed(4)}-${zone.lon!.toStringAsFixed(4)}',
+                  ),
+                  lat: zone.lat!,
+                  lon: zone.lon!,
+                  autoStart: true,
+                ),
               ),
             ],
           ],
