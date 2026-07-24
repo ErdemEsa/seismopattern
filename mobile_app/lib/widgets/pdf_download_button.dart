@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../services/api_service.dart';
+import '../config.dart';
+
+// Web icin dart:html kullan
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 
 enum _PdfState { idle, starting, polling, ready, error }
 
@@ -51,28 +55,32 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
 
       if (r['status'] == 'ready') {
         setState(() => _state = _PdfState.ready);
-        await _download();
+        _download();
         return;
       }
 
       setState(() => _state = _PdfState.polling);
       _timer = Timer.periodic(const Duration(seconds: 12), (_) => _poll());
     } catch (e) {
-      setState(() {
-        _state = _PdfState.error;
-        _errorMsg = e.toString();
-      });
+      if (mounted) {
+        setState(() {
+          _state = _PdfState.error;
+          _errorMsg = e.toString();
+        });
+      }
     }
   }
 
   Future<void> _poll() async {
     _checks++;
-    if (_checks > 25) {
+    if (_checks > 30) {
       _timer?.cancel();
-      setState(() {
-        _state = _PdfState.error;
-        _errorMsg = 'PDF hazirlanamadi (zaman asimi)';
-      });
+      if (mounted) {
+        setState(() {
+          _state = _PdfState.error;
+          _errorMsg = 'PDF hazirlanamadi (zaman asimi)';
+        });
+      }
       return;
     }
 
@@ -85,49 +93,43 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
 
       if (r['status'] == 'ready') {
         _timer?.cancel();
-        setState(() => _state = _PdfState.ready);
-        await _download();
+        if (mounted) {
+          setState(() => _state = _PdfState.ready);
+        }
+        _download();
       } else if (r['status'] == 'error') {
         _timer?.cancel();
-        setState(() {
-          _state = _PdfState.error;
-          _errorMsg = r['error'] ?? 'PDF hatasi';
-        });
+        if (mounted) {
+          setState(() {
+            _state = _PdfState.error;
+            _errorMsg = r['error'] ?? 'PDF hatasi';
+          });
+        }
       }
     } catch (_) {}
   }
 
-  Future<void> _download() async {
+  void _download() {
     final url = _api.getPdfDownloadUrl(
       lat: widget.lat,
       lon: widget.lon,
       refDate: widget.refDate,
     );
-    final uri = Uri.parse(url);
 
     try {
-      final ok = await launchUrl(
-        uri,
-        mode: kIsWeb
-            ? LaunchMode.platformDefault
-            : LaunchMode.externalApplication,
-        webOnlyWindowName: '_blank',
-      );
-
-      if (!ok) {
-        throw Exception('Tarayici indirimi baslatamadi');
-      }
-
-      if (mounted) {
-        setState(() => _state = _PdfState.idle);
-      }
+      final anchor = html.AnchorElement(href: url)
+        ..setAttribute('download', 'SeismoPattern_rapor.pdf')
+        ..setAttribute('target', '_blank')
+        ..click();
+      anchor.remove();
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _state = _PdfState.error;
-          _errorMsg = 'PDF acilamadi: $e';
-        });
-      }
+      try {
+        html.window.open(url, '_blank');
+      } catch (_) {}
+    }
+
+    if (mounted) {
+      setState(() => _state = _PdfState.idle);
     }
   }
 
@@ -154,7 +156,7 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
         label: Text(
           _state == _PdfState.starting
               ? 'Baslatiyor...'
-              : 'Hazirlaniyor... ($_checks)',
+              : 'Hazirlaniyor... ilk olusturma 3-4 dk surebilir ($_checks)',
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF388bfd).withValues(alpha: 0.6),
@@ -174,6 +176,7 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
       ),
       _PdfState.error => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           ElevatedButton.icon(
             onPressed: _start,
