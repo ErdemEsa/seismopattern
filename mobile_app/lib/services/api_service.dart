@@ -85,7 +85,7 @@ class ApiService {
       '${AppConfig.baseUrl}${AppConfig.uncertaintyPath}',
     ).replace(queryParameters: {'lat': lat.toString(), 'lon': lon.toString()});
 
-    final response = await http.get(uri).timeout(const Duration(seconds: 60));
+    final response = await http.get(uri).timeout(const Duration(seconds: 180));
 
     if (response.statusCode != 200) {
       throw Exception(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/api_service.dart';
@@ -103,10 +104,31 @@ class _PdfDownloadButtonState extends State<PdfDownloadButton> {
       refDate: widget.refDate,
     );
     final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+    try {
+      final ok = await launchUrl(
+        uri,
+        mode: kIsWeb
+            ? LaunchMode.platformDefault
+            : LaunchMode.externalApplication,
+        webOnlyWindowName: '_blank',
+      );
+
+      if (!ok) {
+        throw Exception('Tarayici indirimi baslatamadi');
+      }
+
+      if (mounted) {
+        setState(() => _state = _PdfState.idle);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _state = _PdfState.error;
+          _errorMsg = 'PDF acilamadi: $e';
+        });
+      }
     }
-    setState(() => _state = _PdfState.idle);
   }
 
   @override
