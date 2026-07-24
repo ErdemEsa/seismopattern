@@ -644,6 +644,18 @@ def generate_pdf(data, output_path=None):
 # APP ENTEGRASYONU
 # =========================================================
 
+def get_pdf_cache_path(lat, lon, ref_date=None):
+    import re as _re
+
+    tag = f"{lat:.4f}_{lon:.4f}"
+    if ref_date:
+        tag += f"_{ref_date}"
+
+    safe_tag = _re.sub(r"[^a-zA-Z0-9_\-]", "_", tag)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    return OUTPUT_DIR / f"SeismoPattern_cache_{safe_tag}.pdf"
+
+
 _PDF_CACHE_TTL = 3600  # 1 saat
 
 def generate_pdf_for_app(lat, lon, ref_date=None):
@@ -655,9 +667,7 @@ def generate_pdf_for_app(lat, lon, ref_date=None):
         tag += f"_{ref_date}"
 
     safe_tag = _re.sub(r"[^a-zA-Z0-9_\-]", "_", tag)
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    cache_path = OUTPUT_DIR / f"SeismoPattern_cache_{safe_tag}.pdf"
+    cache_path = get_pdf_cache_path(lat, lon, ref_date)
 
     if cache_path.exists():
         age = time.time() - cache_path.stat().st_mtime

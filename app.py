@@ -19,6 +19,7 @@ from flask import Flask, jsonify, render_template_string, request
 # =========================================================
 
 import time as _time
+import threading
 _STARTUP = _time.time()
 
 # Tüm modüller burada bir kez yüklenir
@@ -1305,14 +1306,68 @@ def api_alerts_check():
 # =========================================================
 
 try:
-    from pdf_report import generate_pdf_for_app
+    from pdf_report import generate_pdf_for_app, get_pdf_cache_path
     HAS_PDF = True
 except Exception:
     HAS_PDF = False
 
 
-@app.route("/api/pdf")
-def api_pdf():
+_PDF_JOBS = {}
+_PDF_JOBS_LOCK = threading.Lock()
+
+
+def _pdf_job_key(lat, lon, ref):
+    return f"{lat:.4f}:{lon:.4f}:{ref or 'current'}"
+
+
+def _pdf_url(base, lat, lon, ref):
+    url = f"{base}?lat={lat}&lon={lon}"
+    if ref:
+        url += f"&ref_date={ref}"
+    return url
+
+
+def _start_pdf_job(lat, lon, ref):
+    key = _pdf_job_key(lat, lon, ref)
+    with _PDF_JOBS_LOCK:
+        job = _PDF_JOBS.get(key, {})
+        if job.get("status") == "running":
+            return key, False
+        _PDF_JOBS[key] = {
+            "status": "running",
+            "started_at": _time.time(),
+            "updated_at": _time.time(),
+        }
+
+    def worker():
+        try:
+            path = generate_pdf_for_app(lat, lon, ref)
+            with _PDF_JOBS_LOCK:
+                _PDF_JOBS[key] = {
+                    "status": "ready",
+                    "path": str(path),
+                    "started_at": _PDF_JOBS.get(key, {}).get("started_at", _time.time()),
+                    "updated_at": _time.time(),
+                }
+        except Exception as e:
+            with _PDF_JOBS_LOCK:
+                _PDF_JOBS[key] = {
+                    "status": "error",
+                    "error": str(e),
+                    "started_at": _PDF_JOBS.get(key, {}).get("started_at", _time.time()),
+                    "updated_at": _time.time(),
+                }
+
+    threading.Thread(
+        target=worker,
+        daemon=True,
+        name=f"pdf-{key.replace(':', '_')}",
+    ).start()
+    return key, True
+
+
+@app.route("/api/pdf/start")
+def api_pdf_start():
     try:
         lat = float(request.args.get("lat", 0))
         lon = float(request.args.get("lon", 0))
@@ -1322,13 +1377,106 @@ def api_pdf():
         if not HAS_PDF:
             return jsonify({"error": "PDF modulu yuklu degil"}), 500
 
-        # Cache'li veriyi kullan (tekrar ISC cekme)
-        path = generate_pdf_for_app(lat, lon, ref)
-        return send_from_directory(
-            str(Path(path).parent),
-            Path(path).name,
-            as_attachment=True
-        )
+        cache_path = Path(str(get_pdf_cache_path(lat, lon, ref)))
+        if cache_path.exists():
+            return jsonify({
+                "status": "ready",
+                "download_url": _pdf_url("/api/pdf", lat, lon, ref),
+                "status_url":   _pdf_url("/api/pdf/status", lat, lon, ref),
+            }), 200
+
+        key, started = _start_pdf_job(lat, lon, ref)
+        return jsonify({
+            "status": "running",
+            "started": started,
+            "download_url": _pdf_url("/api/pdf", lat, lon, ref),
+            "status_url":   _pdf_url("/api/pdf/status", lat, lon, ref),
+        }), 202
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/pdf/status")
+def api_pdf_status():
+    try:
+        lat = float(request.args.get("lat", 0))
+        lon = float(request.args.get("lon", 0))
+        ref = request.args.get("ref_date")
+        if lat == 0 and lon == 0:
+            return jsonify({"error": "lat ve lon gerekli"}), 400
+        if not HAS_PDF:
+            return jsonify({"error": "PDF modulu yuklu degil"}), 500
+
+        cache_path = Path(str(get_pdf_cache_path(lat, lon, ref)))
+        if cache_path.exists():
+            return jsonify({
+                "status": "ready",
+                "download_url": _pdf_url("/api/pdf", lat, lon, ref),
+                "status_url":   _pdf_url("/api/pdf/status", lat, lon, ref),
+            }), 200
+
+        key = _pdf_job_key(lat, lon, ref)
+        with _PDF_JOBS_LOCK:
+            job = dict(_PDF_JOBS.get(key, {}))
+
+        if not job:
+            return jsonify({
+                "status": "not_started",
+                "start_url":    _pdf_url("/api/pdf/start", lat, lon, ref),
+                "download_url": _pdf_url("/api/pdf", lat, lon, ref),
+                "status_url":   _pdf_url("/api/pdf/status", lat, lon, ref),
+            }), 200
+
+        payload = {
+            "status":       job.get("status", "unknown"),
+            "download_url": _pdf_url("/api/pdf", lat, lon, ref),
+            "status_url":   _pdf_url("/api/pdf/status", lat, lon, ref),
+        }
+        if job.get("error"):
+            payload["error"] = job["error"]
+        code = 200 if job.get("status") == "ready" else 202
+        return jsonify(payload), code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/pdf")
+def api_pdf():
+    try:
+        lat = float(request.args.get("lat", 0))
+        lon = float(request.args.get("lon", 0))
+        ref = request.args.get("ref_date")
+        auto_start = str(request.args.get("async", "0")).lower() in ("1", "true")
+        if lat == 0 and lon == 0:
+            return jsonify({"error": "lat ve lon gerekli"}), 400
+        if not HAS_PDF:
+            return jsonify({"error": "PDF modulu yuklu degil"}), 500
+
+        cache_path = Path(str(get_pdf_cache_path(lat, lon, ref)))
+        if cache_path.exists():
+            return send_from_directory(
+                str(cache_path.parent),
+                cache_path.name,
+                as_attachment=True,
+            )
+
+        if auto_start:
+            key, started = _start_pdf_job(lat, lon, ref)
+            return jsonify({
+                "status": "running",
+                "started": started,
+                "message": "PDF hazirlaniyor",
+                "status_url":   _pdf_url("/api/pdf/status", lat, lon, ref),
+                "download_url": _pdf_url("/api/pdf", lat, lon, ref),
+            }), 202
+
+        return jsonify({
+            "status": "not_ready",
+            "message": "PDF hazir degil. /api/pdf/start veya /api/pdf?async=1 kullanin.",
+            "start_url":    _pdf_url("/api/pdf/start", lat, lon, ref),
+            "status_url":   _pdf_url("/api/pdf/status", lat, lon, ref),
+            "download_url": _pdf_url("/api/pdf", lat, lon, ref),
+        }), 202
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
