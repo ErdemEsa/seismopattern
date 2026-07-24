@@ -29,6 +29,7 @@ import numpy as np
 import pandas as pd
 import warnings
 import time
+import threading
 warnings.filterwarnings("ignore")
 
 from pathlib import Path
@@ -254,6 +255,8 @@ def train_bootstrap(n_bootstrap: int = 30, random_seed: int = 0):
 _cache = {}
 _result_cache = {}
 _RESULT_CACHE_TTL = 1800
+_manifest_cache = None
+_cache_lock = threading.Lock()
 
 def _normalize_cache_value(value):
     try:
@@ -299,38 +302,57 @@ def preload_bootstrap_models():
 
 
 
-def _load_bootstrap_models():
-    """
-    Bootstrap modellerini yukle. Cache'lenir.
-    """
-    global _cache
-    if _cache:
-        return _cache
+
+def _load_bootstrap_manifest():
+    global _manifest_cache
+    if _manifest_cache is not None:
+        return _manifest_cache
 
     if not MANIFEST.exists():
         return {}
 
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    _manifest_cache = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    return _manifest_cache
+
+
+def _load_bootstrap_models(tip=None):
+    """
+    Bootstrap modellerini tip bazli yukle. Cache'lenir.
+    """
+    global _cache
+
+    manifest = _load_bootstrap_manifest()
+    if not manifest:
+        return {}
+
     tip_feats = manifest.get("tip_feats", {})
+    manifest_models = manifest.get("models", {})
 
-    loaded = {}
-    for tip, model_list in manifest.get("models", {}).items():
-        loaded[tip] = {
-            "feats": tip_feats.get(tip, []),
-            "pipes": []
-        }
-        for m in model_list:
-            fpath = MODEL_DIR / m["file"]
-            if fpath.exists() and HAS_JOBLIB:
-                try:
-                    pipe = joblib.load(fpath)
-                    loaded[tip]["pipes"].append(pipe)
-                except Exception:
-                    pass
+    requested_tips = [tip] if tip else list(manifest_models.keys())
 
-    _cache = loaded
-    total = sum(len(v["pipes"]) for v in loaded.values())
-    return loaded
+    with _cache_lock:
+        for current_tip in requested_tips:
+            if current_tip in _cache:
+                continue
+
+            model_list = manifest_models.get(current_tip, [])
+            loaded_tip = {
+                "feats": tip_feats.get(current_tip, []),
+                "pipes": []
+            }
+
+            for m in model_list:
+                fpath = MODEL_DIR / m["file"]
+                if fpath.exists() and HAS_JOBLIB:
+                    try:
+                        pipe = joblib.load(fpath)
+                        loaded_tip["pipes"].append(pipe)
+                    except Exception:
+                        pass
+
+            _cache[current_tip] = loaded_tip
+
+    return {t: _cache[t] for t in requested_tips if t in _cache}
 
 
 def predict_with_uncertainty(features: dict) -> dict:
@@ -342,14 +364,6 @@ def predict_with_uncertainty(features: dict) -> dict:
       - yalnizca o tipe ait bootstrap modeller kullanilir
       - boylece epistemik uncertainty daha temiz olculur
     """
-    models = _load_bootstrap_models()
-
-    if not models:
-        return {
-            "error": "Bootstrap modeller bulunamadi. Once --train calistirin.",
-            "method": "bootstrap_ensemble"
-        }
-
     # Derived features ekle
     row = features.copy()
     c0 = float(row.get("count_0_1y", 0) or 0)
@@ -372,6 +386,15 @@ def predict_with_uncertainty(features: dict) -> dict:
     )
 
     pt = rule_based_type(row)
+
+    models = _load_bootstrap_models(pt)
+
+    if not models or pt not in models:
+        return {
+            "error": "Bootstrap modeller bulunamadi. Once --train calistirin.",
+            "pattern_type": pt,
+            "method": "bootstrap_ensemble"
+        }
 
     if pt not in models or not models[pt]["pipes"]:
         return {
