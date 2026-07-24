@@ -114,7 +114,7 @@ class ApiService {
     final uri = Uri.parse(
       '${AppConfig.baseUrl}/api/pdf/start',
     ).replace(queryParameters: params);
-    final response = await http.get(uri).timeout(const Duration(seconds: 15));
+    final response = await http.get(uri).timeout(const Duration(seconds: 60));
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
@@ -131,7 +131,7 @@ class ApiService {
     final uri = Uri.parse(
       '${AppConfig.baseUrl}/api/pdf/status',
     ).replace(queryParameters: params);
-    final response = await http.get(uri).timeout(const Duration(seconds: 15));
+    final response = await http.get(uri).timeout(const Duration(seconds: 60));
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
